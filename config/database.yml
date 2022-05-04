@@ -7,13 +7,12 @@ default: &default
 
 development:
   <<: *default
-  url: <%= ENV['DATABASE_URL'].gsub('?', '_development?') %>
+  url: <%= Rails.application.credentials.database[:database_url] %>
 
 test:
   <<: *default
-  url: <%= ENV['DATABASE_URL'].gsub('?', '_test?') %>
+  url: <%= Rails.application.credentials.database[:database_url] %>
 
 production:
   <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
-  
+  url: <%= Rails.application.credentials.database[:database_url] %>

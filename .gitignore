@@ -54,3 +54,9 @@ yarn-debug.log*
 # Ignore cypress screenshots and videos
 cypress/artifacts/screenshots
 cypress/artifacts/videos
+
+/config/credentials/development.key
+
+/config/credentials/test.key
+
+/config/credentials/production.key
