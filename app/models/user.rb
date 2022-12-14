@@ -83,8 +83,9 @@ class User < ApplicationRecord
     DepartmentOptionKlass.new("SEO", 15, "#e078b6"),
     DepartmentOptionKlass.new("SRE", 16, "#4cc8fb"),
     DepartmentOptionKlass.new("Sales", 17, "#784457"),
-    DepartmentOptionKlass.new("Shopify", 18, "#c63c9b")
-  ]
+    DepartmentOptionKlass.new("Shopify", 18, "#c63c9b"),
+    DepartmentOptionKlass.new("Node.js", 19, "#79A366")
+].sort_by(&:name)
 
   # Associations
   has_many :employments, dependent: :destroy
