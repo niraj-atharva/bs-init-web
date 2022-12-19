@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import { setAuthHeaders, registerIntercepts } from "apis/axios";
@@ -14,6 +13,7 @@ import { unmapConsultancyList } from "../../../mapper/consultancy.mapper";
 import DeleteConsultancy from "../Modals/DeleteConsultancy";
 import EditConsultancy from "../Modals/EditConsultancy";
 import NewConsultancy from "../Modals/NewConsultancy";
+import Tab from "../Tab";
 
 const getTableData = (consultancies) => {
   if (consultancies) {
@@ -37,7 +37,6 @@ const ConsultancyList = ({ isAdminUser }) => {
   const [consultancyToEdit, setedit] = useState({});
   const [consultancyToDelete, setDelete] = useState({});
   const [consultancyData, setConsultancyData] = useState<any>();
-  const navigate = useNavigate();
 
   const handleEditClick = (id) => {
     setShowEditDialog(true);
@@ -49,10 +48,6 @@ const ConsultancyList = ({ isAdminUser }) => {
     setShowDeleteDialog(true);
     const editSelection = consultancyData.find(consultancy => consultancy.id === id);
     setDelete(editSelection);
-  };
-
-  const handleRowClick = (id) => {
-    navigate(`/recruitment/consultancies/${id}`);
   };
 
   useEffect(() => {
@@ -95,6 +90,7 @@ const ConsultancyList = ({ isAdminUser }) => {
   return (
     <>
       <ToastContainer autoClose={TOASTER_DURATION} />
+      <Tab isAdminUser={isAdminUser} />
       <Header isAdminUser={isAdminUser} setnewConsultancy={setnewConsultancy} />
       <div>
         <div className="flex flex-col">
@@ -107,7 +103,6 @@ const ConsultancyList = ({ isAdminUser }) => {
                   hasRowIcons={isAdminUser}
                   tableHeader={tableHeader}
                   tableRowArray={tableData}
-                  rowOnClick={isAdminUser ? handleRowClick : () => { }}// eslint-disable-line
                 />}
               </div>
             </div>
