@@ -385,7 +385,7 @@ class Lead < ApplicationRecord
   def tech_stack_names
     return [] unless tech_stack_ids.present?
 
-    (self.tech_stack_name_hash.select { |k, v| tech_stack_ids.include?(k) } || {}).values.flatten.compact.uniq
+    self.tech_stack_name_hash.values_at(*tech_stack_ids.map(&:to_i)).flatten.compact.uniq
   end
 
   def assignee_name
