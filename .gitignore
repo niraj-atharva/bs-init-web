@@ -67,3 +67,5 @@ cypress/videos
 
 # RVM
 .ruby-gemset
+
+config/database.yml

@@ -58,7 +58,7 @@ class LeadPolicy < ApplicationPolicy
       :updated_by_id, :need, :preferred_contact_method_code,
       :initial_communication, :first_name, :last_name,
       :source_code, :priority_code, :title, :company_id,
-      tech_stack_ids: [], emails: []
+      tech_stack_ids: [], emails: [], websites: []
     ]
   end
 end

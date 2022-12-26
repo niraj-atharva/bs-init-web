@@ -36,6 +36,7 @@
 #  telephone                     :string
 #  timezone                      :string
 #  title                         :string
+#  websites                      :text             default([]), is an Array
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  assignee_id                   :bigint
@@ -462,7 +463,8 @@ class Lead < ApplicationRecord
       initial_communication_name: self.initial_communication_name,
       source_code_name: self.source_code_name,
       priority_code_name: self.priority_code_name,
-      tech_stack_names: self.tech_stack_names
+      tech_stack_names: self.tech_stack_names,
+      websites: self.websites || [],
     }
   end
 end
