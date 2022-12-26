@@ -238,7 +238,29 @@ class Lead < ApplicationRecord
   has_many :lead_timelines, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email
+
   before_validation :assign_default_values
+
+  validate :validate_emails
+
+  def validate_emails
+    emails.each do |email|
+      unless email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i)
+        errors.add(:emails, "#{email} is not a valid email address.")
+      end
+    end
+  end
+
+  validate :validate_websites
+
+  def validate_websites
+    websites.each do |website|
+      unless website.slice(URI::regexp(%w(http https))) == website
+        errors.add(:websites, "#{website} is not a valid url.")
+      end
+    end
+  end
 
   def self.filter(params: {}, user: User.none, ids: false)
     allow_leads = Lead.none
