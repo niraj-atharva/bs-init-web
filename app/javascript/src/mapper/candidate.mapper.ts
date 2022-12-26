@@ -39,7 +39,6 @@ const getList = (input: any) => input.candidate_details.map((candidate: any) => 
 
 const unmapCandidateList = (input: any) => {
   const { data } = input;
-
   return {
     recruitmentCandidate: getList(data)
   };
