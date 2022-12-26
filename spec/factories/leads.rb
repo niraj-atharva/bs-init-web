@@ -19,7 +19,7 @@ FactoryBot.define do
     industry { "MyString" }
     quality_code { 1 }
     priority_code { 1 }
-    state_code { 1 }
+    stage_code { 1 }
     industry_code { 1 }
   end
 end

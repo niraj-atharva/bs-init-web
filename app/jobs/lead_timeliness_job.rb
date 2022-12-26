@@ -36,10 +36,6 @@ class LeadTimelinessJob < ApplicationJob
         new_val = old_new_val_arr[1]
 
         case field_name
-        when "budget_status_code"
-          display_field_name = "budget_status"
-          old_val = @lead.budget_status_code_name_hash[old_val.to_i] if old_val != "Unassigned"
-          new_val = @lead.budget_status_code_name_hash[new_val.to_i]
         when "industry_code"
           display_field_name = "industry"
           old_val = @lead.industry_code_name_hash[old_val.to_i] if old_val != "Unassigned"
@@ -48,10 +44,10 @@ class LeadTimelinessJob < ApplicationJob
           display_field_name = "quality"
           old_val = @lead.quality_code_name_hash[old_val.to_i] if old_val != "Unassigned"
           new_val = @lead.quality_code_name_hash[new_val.to_i]
-        when "state_code"
+        when "stage_code"
           display_field_name = "state"
-          old_val = @lead.state_code_name_hash[old_val.to_i] if old_val != "Unassigned"
-          new_val = @lead.state_code_name_hash[new_val.to_i]
+          old_val = @lead.stage_code_name_hash[old_val.to_i] if old_val != "Unassigned"
+          new_val = @lead.stage_code_name_hash[new_val.to_i]
         when "status_code"
           display_field_name = "status"
           old_val = @lead.status_code_name_hash[old_val.to_i] if old_val != "Unassigned"
@@ -60,9 +56,6 @@ class LeadTimelinessJob < ApplicationJob
           display_field_name = "preferred_contact_method"
           old_val = @lead.preferred_contact_method_code_name_hash[old_val.to_i] if old_val != "Unassigned"
           new_val = @lead.preferred_contact_method_code_name_hash[new_val.to_i]
-        when "initial_communication"
-          old_val = @lead.initial_communication_name_hash[old_val.to_i] if old_val != "Unassigned"
-          new_val = @lead.initial_communication_name_hash[new_val.to_i]
         when "source_code"
           display_field_name = "source"
           old_val = @lead.source_code_name_hash[old_val.to_i] if old_val != "Unassigned"
@@ -71,9 +64,6 @@ class LeadTimelinessJob < ApplicationJob
           display_field_name = "priority"
           old_val = @lead.priority_code_name_hash[old_val.to_i] if old_val != "Unassigned"
           new_val = @lead.priority_code_name_hash[new_val.to_i]
-        when "need"
-          old_val = @lead.need_name_hash[old_val.to_i] if old_val != "Unassigned"
-          new_val = @lead.need_name_hash[new_val.to_i]
         when "tech_stack_ids"
           display_field_name = "tech_stacks"
           if old_val.kind_of?(Array)

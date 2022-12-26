@@ -24,11 +24,10 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
 
   def items
     authorize Lead
-    budget_status_codes = Lead::BUDGET_STATUS_CODE_OPTIONS
 
     quality_codes = Lead::QUALITY_CODE_OPTIONS
 
-    state_codes = Lead::STATE_CODE_OPTIONS
+    stage_codes = Lead::STAGE_CODE_OPTIONS
 
     status_codes = Lead::STATUS_CODE_OPTIONS
 
@@ -36,11 +35,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
 
     line_item_kind_names = LeadLineItem::KIND_OPTIONS
 
-    needs = Lead::NEED_OPTIONS
-
     preferred_contact_method_code_names = Lead::PREFERRED_CONTACT_METHOD_CODE_OPTIONS
-
-    initial_communications = Lead::INITIAL_COMMUNICATION_OPTIONS
 
     source_codes = Lead::SOURCE_CODE_OPTIONS
 
@@ -51,10 +46,10 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
     countries = ISO3166::Country.pluck(:alpha2, :iso_short_name)
 
     render json: {
-      budget_status_codes:, quality_codes:, state_codes:,
+      quality_codes:, stage_codes:,
       status_codes:, industry_codes:, line_item_kind_names:,
-      needs:, preferred_contact_method_code_names:,
-      initial_communications:, source_codes:, priority_codes:,
+      preferred_contact_method_code_names:,
+      source_codes:, priority_codes:,
       tech_stacks:, countries:
     },	status: :ok
   end

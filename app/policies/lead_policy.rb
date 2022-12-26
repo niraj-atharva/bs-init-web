@@ -49,14 +49,14 @@ class LeadPolicy < ApplicationPolicy
 
   def permitted_attributes
     [
-      :address, :base_currency, :budget_amount, :budget_status_code,
+      :address, :base_currency, :budget_amount,
       :country, :description, :discarded_at, :donotbulkemail,
       :donotemail, :donotfax, :donotphone, :industry_code,
       :linkedinid, :mobilephone, :name, :email,
-      :quality_code, :skypeid, :state_code, :status_code,
+      :quality_code, :skypeid, :stage_code, :status_code,
       :telephone, :timezone, :assignee_id, :reporter_id, :created_by_id,
-      :updated_by_id, :need, :preferred_contact_method_code,
-      :initial_communication, :first_name, :last_name,
+      :updated_by_id, :preferred_contact_method_code,
+      :first_name, :last_name,
       :source_code, :priority_code, :title, :company_id,
       tech_stack_ids: [], emails: [], websites: []
     ]

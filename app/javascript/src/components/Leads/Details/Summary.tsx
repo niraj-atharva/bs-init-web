@@ -23,7 +23,6 @@ const getInitialvalues = (lead) => ({
   name: lead.name,
   description: lead.description,
   budget_amount: lead.budget_amount,
-  budget_status_code: lead.budget_status_code,
   industry_code: lead.industry_code,
   donotemail: lead.donotemail,
   donotbulkemail: lead.donotbulkemail,
@@ -58,7 +57,6 @@ const Summary = ({
   const [apiError, setApiError] = useState<string>("");
   const [showButton, setShowButton] = useState(false);
 
-  const [budgetStatusCodeList, setBudgetStatusCodeList] = useState<any>(null);
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
@@ -66,10 +64,8 @@ const Summary = ({
   const [techStackList, setTechStackList] = useState<any>(null);
   const [selectedTechStacks, setSelectedTechStacks] = useState<any>(null);
 
-  const [budgetStatusCode, setBudgetStatusCode] = useState<any>(null);
   const [industryCode, setIndustryCode] = useState<any>(null);
   const [preferredContactMethodCode, setPreferredContactMethodCode] = useState<any>(null);
-  const [initialCommunication, setInitialCommunication] = useState<any>(null);
   const [sourceCode, setSourceCode] = useState<any>(null);
   const [country, setCountry] = useState<any>(null);
   const [techStacks, setTechStacks] = useState<any>([]);
@@ -95,14 +91,12 @@ const Summary = ({
     const getLeadItems = async () => {
       leadItemsApi.get()
         .then((data) => {
-          setBudgetStatusCodeList(data.data.budget_status_codes);
           setIndustryCodeList(data.data.industry_codes);
           setPreferredContactMethodCodeList(data.data.preferred_contact_method_code_names);
           setSourceCodeList(data.data.source_codes);
           setCountryList(data.data.countries);
           setTechStackList(data.data.tech_stacks);
         }).catch(() => {
-          setBudgetStatusCodeList({});
           setIndustryCodeList({});
           setPreferredContactMethodCodeList({});
           setSourceCodeList({});
@@ -147,7 +141,6 @@ const Summary = ({
         "email": values.email,
         "budget_amount": values.budget_amount,
         "description": values.description,
-        "budget_status_code": budgetStatusCode || values.budget_status_code,
         "industry_code": industryCode || values.industry_code,
         "donotemail": values.donotemail,
         "donotbulkemail": values.donotbulkemail,
@@ -194,11 +187,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Project Name</label>
                           {isEdit ? <> <Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="title" placeholder="Title" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.title && touched.title &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.title && touched.title &&
                                 <p className="text-xs">{`${errors.title}`}</p>
-                              }
-                            </div></> : <>{leadDetails.title}</>
+                            }
+                          </div></> : <>{leadDetails.title}</>
                           }</div>
                       </div>
 
@@ -207,11 +200,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">First Name</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="first_name" placeholder="First Name" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.first_name && touched.first_name &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.first_name && touched.first_name &&
                                 <p className="text-xs">{`${errors.first_name}`}</p>
-                              }
-                            </div></> : <>{leadDetails.first_name}</>
+                            }
+                          </div></> : <>{leadDetails.first_name}</>
                           }</div>
                       </div>
 
@@ -220,30 +213,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Last Name</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="last_name" placeholder="Last Name" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.last_name && touched.last_name &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.last_name && touched.last_name &&
                                 <p className="text-xs">{`${errors.last_name}`}</p>
-                              }
-                            </div></> : <>{leadDetails.last_name}</>
-                          }</div>
-                      </div>
-
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Budget Status</label>
-                          {isEdit ? <><select
-                            defaultValue={leadDetails.budget_status_code}
-                            className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="budget_status_code" onChange={(e) => setBudgetStatusCode(e.target.value)} disabled={!isEdit} >
-                            <option value=''>Select Budget Status</option>
-                            {budgetStatusCodeList &&
-                              budgetStatusCodeList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.budget_status_code}>{e.name}</option>)}
-                          </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.budget_status_code && touched.budget_status_code &&
-                                <p className="text-xs">{`${errors.budget_status_code}`}</p>
-                              }
-                            </div></> : <>{leadDetails.budget_status_code_name}</>
+                            }
+                          </div></> : <>{leadDetails.last_name}</>
                           }</div>
                       </div>
 
@@ -252,11 +226,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="budget_amount" type="number" min="0" placeholder="Budget Amount" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.budget_amount && touched.budget_amount &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.budget_amount && touched.budget_amount &&
                                 <p className="text-xs">{`${errors.budget_amount}`}</p>
-                              }
-                            </div></> : <>{leadDetails.budget_amount}</>
+                            }
+                          </div></> : <>{leadDetails.budget_amount}</>
                           }</div>
                       </div>
 
@@ -271,16 +245,15 @@ const Summary = ({
                             {industryCodeList &&
                               industryCodeList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.industry_code}>{e.name}</option>)}
                           </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.industry_code && touched.industry_code &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.industry_code && touched.industry_code &&
                                 <p className="text-xs">{`${errors.industry_code}`}</p>
-                              }
-                            </div></> : <>{leadDetails.industry_code_name}</>
+                            }
+                          </div></> : <>{leadDetails.industry_code_name}</>
                           }</div>
                       </div>
 
-
-                    <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Websites</label>
                           {isEdit ? <FieldArray name="websites">
@@ -324,7 +297,7 @@ const Summary = ({
                           </FieldArray> : <>{leadDetails.websites?.join(", ")}</>
                           }</div>
                       </div>
-                      </div>
+                    </div>
                     <div className="mx-auto xl:mx-0">
                       <div className="xl:w-full border-b border-gray-300 dark:border-gray-700 py-5">
                         <div className="flex w-11/12 mx-auto xl:w-full xl:mx-0 items-center">
@@ -343,11 +316,11 @@ const Summary = ({
                             {preferredContactMethodCodeList &&
                               preferredContactMethodCodeList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.preferred_contact_method_code}>{e.name}</option>)}
                           </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.preferred_contact_method_code && touched.preferred_contact_method_code &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.preferred_contact_method_code && touched.preferred_contact_method_code &&
                                 <p className="text-xs">{`${errors.preferred_contact_method_code}`}</p>
-                              }
-                            </div></> : <>{leadDetails.preferred_contact_method_code_name}</>
+                            }
+                          </div></> : <>{leadDetails.preferred_contact_method_code_name}</>
                           }</div>
                       </div>
 
@@ -362,11 +335,11 @@ const Summary = ({
                             {sourceCodeList &&
                               sourceCodeList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.source_code}>{e.name}</option>)}
                           </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.source_code && touched.source_code &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.source_code && touched.source_code &&
                                 <p className="text-xs">{`${errors.source_code}`}</p>
-                              }
-                            </div></> : <>{leadDetails.source_code_name}</>
+                            }
+                          </div></> : <>{leadDetails.source_code_name}</>
                           }</div>
                       </div>
 
@@ -375,11 +348,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Description</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="description" as="textarea" rows={8} placeholder="Description" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.description && touched.description &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.description && touched.description &&
                                 <p className="text-xs">{`${errors.description}`}</p>
-                              }
-                            </div></> : <>{leadDetails.description}</>
+                            }
+                          </div></> : <>{leadDetails.description}</>
                           }</div>
                       </div>
 
@@ -425,11 +398,11 @@ const Summary = ({
                             {countryList &&
                               countryList.map(e => <option value={e[0]} key={e[0]} selected={e[0] === leadDetails.country}>{e[1]}</option>)}
                           </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.country && touched.country &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.country && touched.country &&
                                 <p className="text-xs">{`${errors.country}`}</p>
-                              }
-                            </div></> : <>{leadDetails.country}</>
+                            }
+                          </div></> : <>{leadDetails.country}</>
                           }</div>
                       </div>
 
@@ -438,11 +411,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Address</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="address" as="textarea" rows={8} placeholder="Address" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.address && touched.address &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.address && touched.address &&
                                 <p className="text-xs">{`${errors.address}`}</p>
-                              }
-                            </div></> : <>{leadDetails.address}</>
+                            }
+                          </div></> : <>{leadDetails.address}</>
                           }</div>
                       </div>
 
@@ -451,11 +424,11 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Mobile Phone</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="mobilephone" placeholder="Mobile Phone" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.mobilephone && touched.mobilephone &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.mobilephone && touched.mobilephone &&
                                 <p className="text-xs">{`${errors.mobilephone}`}</p>
-                              }
-                            </div></> : <>{leadDetails.mobilephone}</>
+                            }
+                          </div></> : <>{leadDetails.mobilephone}</>
                           }</div>
                       </div>
 
@@ -464,51 +437,26 @@ const Summary = ({
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Tele Phone</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="telephone" placeholder="Tele Phone" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.telephone && touched.telephone &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.telephone && touched.telephone &&
                                 <p className="text-xs">{`${errors.telephone}`}</p>
-                              }
-                            </div></> : <>{leadDetails.telephone}</>
+                            }
+                          </div></> : <>{leadDetails.telephone}</>
                           }</div>
                       </div>
                     </div>
+
                     <div className="mx-auto xl:mx-0">
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Skype ID</label>
-                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="skypeid" placeholder="Skpe ID" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.skypeid && touched.skypeid &&
-                                <p className="text-xs">{`${errors.skypeid}`}</p>
-                              }
-                            </div></> : <>{leadDetails.skypeid}</>
-                          }</div>
-                      </div>
-
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Linkedin ID</label>
-                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="linkedinid" placeholder="Linkedin ID" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.linkedinid && touched.linkedinid &&
-                                <p className="text-xs">{`${errors.linkedinid}`}</p>
-                              }
-                            </div></> : <>{leadDetails.linkedinid}</>
-                          }</div>
-
-                      </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Primary Email</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="email" placeholder="Primary Email" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.email && touched.email &&
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.email && touched.email &&
                                 <p className="text-xs">{`${errors.email}`}</p>
-                              }
-                            </div></> : <>{leadDetails.email}</>
+                            }
+                          </div></> : <>{leadDetails.email}</>
                           }</div>
                       </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
@@ -554,6 +502,33 @@ const Summary = ({
                             )}
                           </FieldArray> : <>{leadDetails.emails?.join(", ")}</>
                           }</div>
+                      </div>
+
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Skype ID</label>
+                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                            name="skypeid" placeholder="Skpe ID" disabled={!isEdit} />
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.skypeid && touched.skypeid &&
+                                <p className="text-xs">{`${errors.skypeid}`}</p>
+                            }
+                          </div></> : <>{leadDetails.skypeid}</>
+                          }</div>
+                      </div>
+
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Linkedin ID</label>
+                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                            name="linkedinid" placeholder="Linkedin ID" disabled={!isEdit} />
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.linkedinid && touched.linkedinid &&
+                                <p className="text-xs">{`${errors.linkedinid}`}</p>
+                            }
+                          </div></> : <>{leadDetails.linkedinid}</>
+                          }</div>
+
                       </div>
                     </div>
                   </div>

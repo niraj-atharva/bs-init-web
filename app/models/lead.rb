@@ -8,7 +8,6 @@
 #  address                       :text
 #  base_currency                 :string           default("USD")
 #  budget_amount                 :decimal(, )      default(0.0)
-#  budget_status_code            :integer
 #  country                       :string
 #  description                   :string
 #  discarded_at                  :datetime
@@ -20,17 +19,15 @@
 #  emails                        :text             default([]), is an Array
 #  first_name                    :string
 #  industry_code                 :integer
-#  initial_communication         :integer
 #  last_name                     :string
 #  linkedinid                    :string
 #  mobilephone                   :string
-#  need                          :integer
 #  preferred_contact_method_code :integer
 #  priority_code                 :integer
 #  quality_code                  :integer
 #  skypeid                       :string
 #  source_code                   :integer
-#  state_code                    :integer
+#  stage_code                    :integer
 #  status_code                   :integer
 #  tech_stack_ids                :text             default([]), is an Array
 #  telephone                     :string
@@ -68,29 +65,30 @@ class Lead < ApplicationRecord
 
   CodeOptionKlass = Struct.new(:name, :id)
 
-  BUDGET_STATUS_CODE_OPTIONS = [
-    CodeOptionKlass.new("No Committed Budget", 0),
-    CodeOptionKlass.new("May Buy", 1),
-    CodeOptionKlass.new("Can Buy", 2),
-    CodeOptionKlass.new("Will Buy", 3)
-  ]
-
   QUALITY_CODE_OPTIONS = [
     CodeOptionKlass.new("Hot", 0),
     CodeOptionKlass.new("Warm", 1),
     CodeOptionKlass.new("Cold", 2)
   ]
 
-  STATE_CODE_OPTIONS = [
+  STAGE_CODE_OPTIONS = [
     CodeOptionKlass.new("Open", 0),
     CodeOptionKlass.new("Qualified", 1),
-    CodeOptionKlass.new("Disqualified", 2)
+    CodeOptionKlass.new("In Discussion", 2),
+    CodeOptionKlass.new("Proposition", 3),
+    CodeOptionKlass.new("Won", 4),
+    CodeOptionKlass.new("Lost", 5),
   ]
 
   STATUS_CODE_OPTIONS = [
+    # Open
     CodeOptionKlass.new("New", 0),
     CodeOptionKlass.new("Contacted", 1),
+
+    # Qualified
     CodeOptionKlass.new("Qualified", 2),
+
+    # Disqualified
     CodeOptionKlass.new("Lost", 3),
     CodeOptionKlass.new("Cannot Contact", 4),
     CodeOptionKlass.new("No Longer Interested", 5),
@@ -133,24 +131,12 @@ class Lead < ApplicationRecord
     CodeOptionKlass.new("Wholesale", 32)
   ]
 
-  NEED_OPTIONS = [
-    CodeOptionKlass.new("Must have", 0),
-    CodeOptionKlass.new("Should have", 1),
-    CodeOptionKlass.new("Good to have", 2),
-    CodeOptionKlass.new("No need", 3)
-  ]
-
   PREFERRED_CONTACT_METHOD_CODE_OPTIONS = [
     CodeOptionKlass.new("Any", 0),
     CodeOptionKlass.new("Email", 1),
     CodeOptionKlass.new("Phone", 2),
     CodeOptionKlass.new("Fax", 3),
     CodeOptionKlass.new("Mail", 4)
-  ]
-
-  INITIAL_COMMUNICATION_OPTIONS = [
-    CodeOptionKlass.new("Contacted", 0),
-    CodeOptionKlass.new("Not Contacted", 1)
   ]
 
   SOURCE_CODE_OPTIONS = [
@@ -301,10 +287,6 @@ class Lead < ApplicationRecord
     self.status_code = Lead::STATUS_CODE_OPTIONS.group_by(&:name)["New"].first.id if self.status_code.blank?
   end
 
-  def budget_status_code_name_hash
-    Lead::BUDGET_STATUS_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
-  end
-
   def industry_code_name_hash
     Lead::INDUSTRY_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
@@ -313,8 +295,8 @@ class Lead < ApplicationRecord
     Lead::QUALITY_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
 
-  def state_code_name_hash
-    Lead::STATE_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
+  def stage_code_name_hash
+    Lead::STAGE_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
 
   def status_code_name_hash
@@ -325,10 +307,6 @@ class Lead < ApplicationRecord
     Lead::PREFERRED_CONTACT_METHOD_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
 
-  def initial_communication_name_hash
-    Lead::INITIAL_COMMUNICATION_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
-  end
-
   def source_code_name_hash
     Lead::SOURCE_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
@@ -337,18 +315,8 @@ class Lead < ApplicationRecord
     Lead::PRIORITY_CODE_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
   end
 
-  def need_name_hash
-    Lead::NEED_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
-  end
-
   def tech_stack_name_hash
     Lead::TECH_STACK_OPTIONS.group_by(&:id).transform_values { |val| val.first.name }
-  end
-
-  def budget_status_code_name
-    return "" if budget_status_code.nil?
-
-    self.budget_status_code_name_hash[budget_status_code]
   end
 
   def industry_code_name
@@ -363,10 +331,10 @@ class Lead < ApplicationRecord
     self.quality_code_name_hash[quality_code]
   end
 
-  def state_code_name
-    return "" if state_code.nil?
+  def stage_code_name
+    return "" if stage_code.nil?
 
-    self.state_code_name_hash[state_code]
+    self.stage_code_name_hash[stage_code]
   end
 
   def status_code_name
@@ -375,22 +343,10 @@ class Lead < ApplicationRecord
     self.status_code_name_hash[status_code]
   end
 
-  def need_name
-    return "" if need.nil?
-
-    self.need_name_hash[need]
-  end
-
   def preferred_contact_method_code_name
     return "" if preferred_contact_method_code.nil?
 
     self.preferred_contact_method_code_name_hash[preferred_contact_method_code]
-  end
-
-  def initial_communication_name
-    return "" if initial_communication.nil?
-
-    self.initial_communication_name_hash[initial_communication]
   end
 
   def source_code_name
@@ -437,7 +393,6 @@ class Lead < ApplicationRecord
       address: self.address,
       base_currency: self.base_currency,
       budget_amount: self.budget_amount,
-      budget_status_code: self.budget_status_code,
       country: self.country,
       description: self.description,
       discarded_at: self.discarded_at,
@@ -452,7 +407,7 @@ class Lead < ApplicationRecord
       email: self.email,
       quality_code: self.quality_code,
       skypeid: self.skypeid,
-      state_code: self.state_code,
+      stage_code: self.stage_code,
       status_code: self.status_code,
       telephone: self.telephone,
       timezone: self.timezone,
@@ -460,9 +415,7 @@ class Lead < ApplicationRecord
       reporter_id: self.reporter_id,
       created_by_id: self.created_by_id,
       updated_by_id: self.updated_by_id,
-      need: self.need,
       preferred_contact_method_code: self.preferred_contact_method_code,
-      initial_communication: self.initial_communication,
       first_name: self.first_name,
       last_name: self.last_name,
       source_code: self.source_code,
@@ -471,22 +424,19 @@ class Lead < ApplicationRecord
       priority_code: self.priority_code,
       title: self.title,
       company_id: self.company_id,
-      budget_status_code_name: self.budget_status_code_name,
       industry_code_name:	self.industry_code_name,
       quality_code_name:	self.quality_code_name,
-      state_code_name:	self.state_code_name,
+      stage_code_name:	self.stage_code_name,
       status_code_name:	self.status_code_name,
       assignee_name: self.assignee_name,
       reporter_name: self.reporter_name,
       created_by_name: self.created_by_name,
       updated_by_name: self.updated_by_name,
-      need_name: self.need_name,
       preferred_contact_method_code_name: self.preferred_contact_method_code_name,
-      initial_communication_name: self.initial_communication_name,
       source_code_name: self.source_code_name,
       priority_code_name: self.priority_code_name,
       tech_stack_names: self.tech_stack_names,
-      websites: self.websites || [],
+      websites: self.websites || []
     }
   end
 end
