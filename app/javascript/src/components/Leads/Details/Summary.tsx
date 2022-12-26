@@ -29,18 +29,15 @@ const getInitialvalues = (lead) => ({
   donotbulkemail: lead.donotbulkemail,
   donotfax: lead.donotfax,
   donotphone: lead.donotphone,
-  need: lead.need,
   preferred_contact_method_code: lead.preferred_contact_method_code,
-  initial_communication: lead.initial_communication,
   priority_code: lead.priority_code,
   first_name: lead.first_name,
   last_name: lead.last_name,
   source_code: lead.source_code,
   tech_stack_ids: lead.tech_stack_ids || [],
   emails: lead.emails || [],
-  need_name: lead.need_name,
+  websites: lead.websites || [],
   preferred_contact_method_code_name: lead.preferred_contact_method_code_name,
-  initial_communication_name: lead.initial_communication_name,
   source_code_name: lead.source_code_name,
   title: lead.title,
   email: lead.email,
@@ -63,9 +60,7 @@ const Summary = ({
 
   const [budgetStatusCodeList, setBudgetStatusCodeList] = useState<any>(null);
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
-  const [needList, setNeedList] = useState<any>(null);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
-  const [initialCommunicationList, setInitialCommunicationList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
   const [countryList, setCountryList] = useState<any>(null);
   const [techStackList, setTechStackList] = useState<any>(null);
@@ -73,7 +68,6 @@ const Summary = ({
 
   const [budgetStatusCode, setBudgetStatusCode] = useState<any>(null);
   const [industryCode, setIndustryCode] = useState<any>(null);
-  const [need, setNeed] = useState<any>(null);
   const [preferredContactMethodCode, setPreferredContactMethodCode] = useState<any>(null);
   const [initialCommunication, setInitialCommunication] = useState<any>(null);
   const [sourceCode, setSourceCode] = useState<any>(null);
@@ -103,18 +97,14 @@ const Summary = ({
         .then((data) => {
           setBudgetStatusCodeList(data.data.budget_status_codes);
           setIndustryCodeList(data.data.industry_codes);
-          setNeedList(data.data.needs);
           setPreferredContactMethodCodeList(data.data.preferred_contact_method_code_names);
-          setInitialCommunicationList(data.data.initial_communications);
           setSourceCodeList(data.data.source_codes);
           setCountryList(data.data.countries);
           setTechStackList(data.data.tech_stacks);
         }).catch(() => {
           setBudgetStatusCodeList({});
           setIndustryCodeList({});
-          setNeedList({});
           setPreferredContactMethodCodeList({});
-          setInitialCommunicationList({});
           setSourceCodeList({});
           setCountryList({});
           setTechStackList({});
@@ -163,15 +153,14 @@ const Summary = ({
         "donotbulkemail": values.donotbulkemail,
         "donotfax": values.donotfax,
         "donotphone": values.donotphone,
-        "need": need || values.need,
         "preferred_contact_method_code": preferredContactMethodCode || values.preferred_contact_method_code,
-        "initial_communication": initialCommunication || values.initial_communication,
         "source_code": sourceCode || values.source_code,
         "address": values.address,
         "country": country || values.country,
         "skypeid": values.skypeid,
         "linkedinid": values.linkedinid,
         "emails": values.emails || [],
+        "websites": values.websites || [],
         "mobilephone": values.mobilephone,
         "telephone": values.telephone,
         "tech_stack_ids": techStacks ? techStacks.map(Number) : []
@@ -202,7 +191,7 @@ const Summary = ({
                     <div className="mx-auto xl:mx-0">
                       <div className="mt-8 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Title</label>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Project Name</label>
                           {isEdit ? <> <Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="title" placeholder="Title" disabled={!isEdit} />
                             <div className="flex justify-between items-center pt-1 text-red-700">
@@ -241,64 +230,6 @@ const Summary = ({
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Primary Email</label>
-                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="email" placeholder="Primary Email" disabled={!isEdit} />
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.email && touched.email &&
-                                <p className="text-xs">{`${errors.email}`}</p>
-                              }
-                            </div></> : <>{leadDetails.email}</>
-                          }</div>
-                      </div>
-
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Other Emails</label>
-                          {isEdit ? <FieldArray name="emails">
-                            {({ remove, push }) => (
-                              <div>
-                                {
-                                  values.emails && values.emails.length > 0 &&
-                                  values.emails.map((email, index) => (
-                                    <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
-                                      <div className="col-span-11">
-                                        <Field
-                                          className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                                          name={`emails.${index}`}
-                                          placeholder="Email"
-                                          disabled={!isEdit}
-                                        />
-                                        <div className="flex justify-between items-center pt-1 text-red-700">
-                                          {errors.emails && touched.emails &&
-                                            <p className="text-xs">{`${errors.emails}`}</p>
-                                          }
-                                        </div>
-                                      </div>
-                                      {isEdit &&
-                                        <div>
-                                          <svg onClick={() => remove(index)} className="mt-2 fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
-                                        </div>
-                                      }
-                                    </div>
-                                  ))
-                                }
-                                <button
-                                  type="button"
-                                  className="mt-4 w-2/6 header__button text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                                  onClick={() => push('')}
-                                  disabled={!isEdit}
-                                >
-                                  Add Email
-                                </button>
-                              </div>
-                            )}
-                          </FieldArray> : <>{leadDetails.emails?.join(", ")}</>
-                          }</div>
-                      </div>
-
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Budget Status</label>
                           {isEdit ? <><select
                             defaultValue={leadDetails.budget_status_code}
@@ -318,7 +249,7 @@ const Summary = ({
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Budget Amount</label>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="budget_amount" type="number" min="0" placeholder="Budget Amount" disabled={!isEdit} />
                             <div className="flex justify-between items-center pt-1 text-red-700">
@@ -347,31 +278,58 @@ const Summary = ({
                             </div></> : <>{leadDetails.industry_code_name}</>
                           }</div>
                       </div>
-                    </div>
+
+
+                    <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Websites</label>
+                          {isEdit ? <FieldArray name="websites">
+                            {({ remove, push }) => (
+                              <div>
+                                {
+                                  values.websites && values.websites.length > 0 &&
+                                  values.websites.map((websites, index) => (
+                                    <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
+                                      <div className="col-span-11">
+                                        <Field
+                                          className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                          name={`websites.${index}`}
+                                          placeholder="Website"
+                                          disabled={!isEdit}
+                                        />
+                                        <div className="flex justify-between items-center pt-1 text-red-700">
+                                          {errors.websites && touched.websites &&
+                                            <p className="text-xs">{`${errors.websites}`}</p>
+                                          }
+                                        </div>
+                                      </div>
+                                      {isEdit &&
+                                        <div>
+                                          <svg onClick={() => remove(index)} className="mt-2 fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
+                                        </div>
+                                      }
+                                    </div>
+                                  ))
+                                }
+                                <button
+                                  type="button"
+                                  className="mt-4 w-2/6 header__button text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                  onClick={() => push('')}
+                                  disabled={!isEdit}
+                                >
+                                  Add Website
+                                </button>
+                              </div>
+                            )}
+                          </FieldArray> : <>{leadDetails.websites?.join(", ")}</>
+                          }</div>
+                      </div>
+                      </div>
                     <div className="mx-auto xl:mx-0">
                       <div className="xl:w-full border-b border-gray-300 dark:border-gray-700 py-5">
                         <div className="flex w-11/12 mx-auto xl:w-full xl:mx-0 items-center">
                           <p className="text-lg text-gray-800 dark:text-gray-100 font-bold">More Information</p>
                         </div>
-                      </div>
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Need</label>
-                          {isEdit ? <><select
-                            defaultValue={leadDetails.need}
-                            className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none
-                          "
-                            name="need" onChange={(e) => setNeed(e.target.value)} disabled={!isEdit} >
-                            <option value=''>Select Need</option>
-                            {needList &&
-                              needList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.need}>{e.name}</option>)}
-                          </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.need && touched.need &&
-                                <p className="text-xs">{`${errors.need}`}</p>
-                              }
-                            </div></> : <>{leadDetails.need_name}</>
-                          }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
@@ -409,25 +367,6 @@ const Summary = ({
                                 <p className="text-xs">{`${errors.source_code}`}</p>
                               }
                             </div></> : <>{leadDetails.source_code_name}</>
-                          }</div>
-                      </div>
-
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Initial Communication</label>
-                          {isEdit ? <><select
-                            defaultValue={leadDetails.initial_communication}
-                            className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="initial_communication" onChange={(e) => setInitialCommunication(e.target.value)} disabled={!isEdit} >
-                            <option value=''>Select Initial Communication</option>
-                            {initialCommunicationList &&
-                              initialCommunicationList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.initial_communication}>{e.name}</option>)}
-                          </select>
-                            <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.initial_communication && touched.initial_communication &&
-                                <p className="text-xs">{`${errors.initial_communication}`}</p>
-                              }
-                            </div></> : <>{leadDetails.initial_communication_name}</>
                           }</div>
                       </div>
 
@@ -557,6 +496,63 @@ const Summary = ({
                                 <p className="text-xs">{`${errors.linkedinid}`}</p>
                               }
                             </div></> : <>{leadDetails.linkedinid}</>
+                          }</div>
+
+                      </div>
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Primary Email</label>
+                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                            name="email" placeholder="Primary Email" disabled={!isEdit} />
+                            <div className="flex justify-between items-center pt-1 text-red-700">
+                              {errors.email && touched.email &&
+                                <p className="text-xs">{`${errors.email}`}</p>
+                              }
+                            </div></> : <>{leadDetails.email}</>
+                          }</div>
+                      </div>
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Other Emails</label>
+                          {isEdit ? <FieldArray name="emails">
+                            {({ remove, push }) => (
+                              <div>
+                                {
+                                  values.emails && values.emails.length > 0 &&
+                                  values.emails.map((email, index) => (
+                                    <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
+                                      <div className="col-span-11">
+                                        <Field
+                                          className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                          name={`emails.${index}`}
+                                          placeholder="Email"
+                                          disabled={!isEdit}
+                                        />
+                                        <div className="flex justify-between items-center pt-1 text-red-700">
+                                          {errors.emails && touched.emails &&
+                                            <p className="text-xs">{`${errors.emails}`}</p>
+                                          }
+                                        </div>
+                                      </div>
+                                      {isEdit &&
+                                        <div>
+                                          <svg onClick={() => remove(index)} className="mt-2 fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
+                                        </div>
+                                      }
+                                    </div>
+                                  ))
+                                }
+                                <button
+                                  type="button"
+                                  className="mt-4 w-2/6 header__button text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                  onClick={() => push('')}
+                                  disabled={!isEdit}
+                                >
+                                  Add Email
+                                </button>
+                              </div>
+                            )}
+                          </FieldArray> : <>{leadDetails.emails?.join(", ")}</>
                           }</div>
                       </div>
                     </div>
