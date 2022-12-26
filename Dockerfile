@@ -14,6 +14,7 @@ RUN bundle install
 # Install yarn packages
 COPY package.json /app/package.json
 COPY yarn.lock /app/yarn.lock
+COPY config/database.yml /app/config/yarn.lock
 RUN yarn install
 
 COPY . /app
