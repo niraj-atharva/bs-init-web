@@ -78,7 +78,7 @@ const unmapCandidateDetails = (input: any) => {
       source_code: data.candidate_details.source_code,
       source_code_name: data.candidate_details.source_code_name,
       tech_stack_ids: data.candidate_details.tech_stack_ids || [],
-      tech_stack_names: data.candidate_details.tech_stack_names,
+      tech_stack_names: data.candidate_details.tech_stack_names || [],
       mobilephone: data.candidate_details.mobilephone,
       telephone: data.candidate_details.telephone,
       country: data.candidate_details.country,

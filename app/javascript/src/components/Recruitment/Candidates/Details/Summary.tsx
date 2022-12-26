@@ -30,6 +30,7 @@ const getInitialvalues = (candidate: any) => ({
   last_name: candidate.last_name,
   source_code: candidate.source_code,
   tech_stack_ids: candidate.tech_stack_ids || [],
+  tech_stack_names: candidate.tech_stack_names,
   emails: candidate.emails || [],
   preferred_contact_method_code_name: candidate.preferred_contact_method_code_name,
   initial_communication_name: candidate.initial_communication_name,
@@ -290,7 +291,7 @@ const Summary = ({
                           {errors.preferred_contact_method_code && touched.preferred_contact_method_code &&
                             <p className="text-xs">{`${errors.preferred_contact_method_code}`}</p>
                           }
-                        </div></> : <>{candidateDetails.preferred_contact_method_code}</>
+                        </div></> : <>{candidateDetails.preferred_contact_method_code_name}</>
 }</div>
                       </div>
 
@@ -310,7 +311,7 @@ const Summary = ({
                           {errors.source_code && touched.source_code &&
                             <p className="text-xs">{`${errors.source_code}`}</p>
                           }
-                        </div></> : <>{candidateDetails.source_code}</>
+                        </div></> : <>{candidateDetails.source_code_name}</>
 }</div>
                       </div>
 
@@ -330,7 +331,7 @@ const Summary = ({
                           {errors.initial_communication && touched.initial_communication &&
                             <p className="text-xs">{`${errors.initial_communication}`}</p>
                           }
-                        </div></> : <>{candidateDetails.initial_communication}</>
+                        </div></> : <>{candidateDetails.initial_communication_name}</>
 }</div>
                       </div>
 
