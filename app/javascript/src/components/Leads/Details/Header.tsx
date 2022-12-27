@@ -205,6 +205,10 @@ const Header = ({
             <p className="uppercase">{leadDetails.priority_code_name}</p>
           </div>
           <div className="ml-22 text-xs text-col-dark-app-400">
+            <h6 className="font-semibold">Stage</h6>
+            <p className="uppercase">{leadDetails.stage_code_name}</p>
+          </div>
+          <div className="ml-22 text-xs text-col-dark-app-400">
             <h6 className="font-semibold">Status</h6>
             <p>
               <span className={leadDetails.status_code_name ? `${getStatusCssClass(leadDetails.status_code_name)} uppercase` : ""}>

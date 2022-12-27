@@ -32,6 +32,9 @@ const getTableData = (leads) => {
           {lead.quality_code_name}
         </div>,
         col5: <div className="text-xs tracking-widest text-center">
+          {lead.stage_code_name}
+        </div>,
+        col6: <div className="text-xs tracking-widest text-center">
           {lead.status_code_name}
         </div>,
         rowId: lead.id
@@ -129,8 +132,13 @@ const Leads = ({ permissions }) => {
       cssClass: "text-center"
     },
     {
-      Header: "Status",
+      Header: "Stage",
       accessor: "col5",
+      cssClass: "text-center"
+    },
+    {
+      Header: "Status",
+      accessor: "col6",
       cssClass: "text-center"
     }
   ];
@@ -140,7 +148,7 @@ const Leads = ({ permissions }) => {
   return (
     <>
       <ToastContainer autoClose={TOASTER_DURATION} />
-      <Header isAdminUser={permissions.leads} setnewLead={setnewLead} setFilterVisibilty={setFilterVisibilty} 
+      <Header isAdminUser={permissions.leads} setnewLead={setnewLead} setFilterVisibilty={setFilterVisibilty}
         isFilterVisible={isFilterVisible} setDisplayActions={setDisplayActions} />
       <div>
         <div className="flex flex-col">
