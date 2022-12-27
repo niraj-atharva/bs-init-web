@@ -247,7 +247,6 @@ class Candidate < ApplicationRecord
       name: self.name,
       email: self.email,
       emails: self.emails || [],
-      status_code: self.status_code,
       assignee_id: self.assignee_id,
       assignee_name: self.assignee_name,
       reporter_id: self.reporter_id,

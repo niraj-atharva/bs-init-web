@@ -19,6 +19,7 @@
 #  emails                        :text             default([]), is an Array
 #  first_name                    :string
 #  industry_code                 :integer
+#  job_position                  :string
 #  last_name                     :string
 #  linkedinid                    :string
 #  mobilephone                   :string
@@ -418,6 +419,7 @@ class Lead < ApplicationRecord
       preferred_contact_method_code: self.preferred_contact_method_code,
       first_name: self.first_name,
       last_name: self.last_name,
+      job_position: self.job_position,
       source_code: self.source_code,
       tech_stack_ids: self.tech_stack_ids || [],
       emails: self.emails || [],

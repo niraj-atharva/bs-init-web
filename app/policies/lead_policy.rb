@@ -56,7 +56,7 @@ class LeadPolicy < ApplicationPolicy
       :quality_code, :skypeid, :stage_code, :status_code,
       :telephone, :timezone, :assignee_id, :reporter_id, :created_by_id,
       :updated_by_id, :preferred_contact_method_code,
-      :first_name, :last_name,
+      :first_name, :last_name, :job_position,
       :source_code, :priority_code, :title, :company_id,
       tech_stack_ids: [], emails: [], websites: []
     ]
