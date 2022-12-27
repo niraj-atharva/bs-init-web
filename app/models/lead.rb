@@ -261,6 +261,7 @@ class Lead < ApplicationRecord
     industry_codes = params[:industry_codes].present? ? params[:industry_codes].split(",").map(&:to_i) : []
     source_codes = params[:source_codes].present? ? params[:source_codes].split(",").map(&:to_i) : []
     status_codes = params[:status_codes].present? ? params[:status_codes].split(",").map(&:to_i) : []
+    stage_codes = params[:stage_codes].present? ? params[:stage_codes].split(",").map(&:to_i) : []
 
     allow_leads = Lead.includes(:assignee, :reporter, :created_by, :updated_by).where(discarded_at: nil)
 
@@ -279,6 +280,7 @@ class Lead < ApplicationRecord
     allow_leads = allow_leads.where(industry_code: industry_codes) if industry_codes.present?
     allow_leads = allow_leads.where(source_code: source_codes) if source_codes.present?
     allow_leads = allow_leads.where(status_code: status_codes) if status_codes.present?
+    allow_leads = allow_leads.where(stage_code: stage_codes) if stage_codes.present?
 
     ids ? allow_leads.pluck(:id).uniq : allow_leads
   end

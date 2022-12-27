@@ -13,6 +13,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
   const [allowUserList, setAllowUserLIst] = useState<any>([{}]);
   const [qualityOptions, setQualityOptions] = useState<any>([{}]);
   const [statusOptions, setStatusOptions] = useState<any>([{}]);
+  const [stageOptions, setStageOptions] = useState<any>([{}]);
   const [sourceOptions, setSourceOptions] = useState<any>([{}]);
   const [countryOptions, setCountryOptions] = useState<any>([{}]);
   const [industryOptions, setIndustryOptions] = useState<any>([{}]);
@@ -24,6 +25,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
     country_alphas: [],
     industry_codes: [],
     source_codes: [],
+    stage_codes: [],
     status_codes: []
   });
   const [stringQueryParams, setStringQueryParams] = useState<any>(null);
@@ -35,6 +37,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
   const [selectIndustryRef, setSelectIndustryRef] = useState<any>(React.createRef());
   const [selectSourceRef, setSelectSourceRef] = useState<any>(React.createRef());
   const [selectStatusRef, setSelectStatusRef] = useState<any>(React.createRef());
+  const [selectStageRef, setSelectStageRef] = useState<any>(React.createRef());
 
   const [isApplyFilter, setIsApplyFilter] = useState<boolean>(false);
 
@@ -42,6 +45,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
   const [rememberReporters, setRememberReporters] = useState<any>(null);
   const [rememberQualities, setRememberQualities] = useState<any>(null);
   const [rememberStatus, setRememberStatus] = useState<any>(null);
+  const [rememberStage, setRememberStage] = useState<any>(null);
   const [rememberSources, setRememberSources] = useState<any>(null);
   const [rememberCountries, setRememberCountries] = useState<any>(null);
   const [rememberIndustries, setRememberIndustries] = useState<any>(null);
@@ -55,11 +59,13 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
           setIndustryOptions(data.data.industry_codes)
           setSourceOptions(data.data.source_codes)
           setStatusOptions(data.data.status_codes)
+          setStageOptions(data.data.stage_codes)
         }).catch(() => {
           setCountryOptions({})
           setIndustryOptions({})
           setSourceOptions({})
           setStatusOptions({})
+          setStageOptions({})
         });
       leadAllowedUsersApi.get()
         .then((data) => {
@@ -116,9 +122,15 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
         );
         setRememberStatus([...fstatusOptions])
       }
+      if (stageOptions && filtered.stage_codes){
+        const fstageOptions = stageOptions.filter(stage =>
+          filtered.stage_codes.map(Number).includes(parseInt(stage.id))
+        );
+        setRememberStage([...fstageOptions])
+      }
     }
   }, [rememberFilter.leadsFilter, allowUserList, qualityOptions, countryOptions,
-    industryOptions, sourceOptions, statusOptions]);
+    industryOptions, sourceOptions, statusOptions, stageOptions]);
 
   const customStyles = {
     control: (provided) => ({
@@ -165,6 +177,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
       country_alphas: [],
       industry_codes: [],
       source_codes: [],
+      stage_codes: [],
       status_codes: []
     })
 
@@ -174,6 +187,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
     selectCountryRef.resetSelectedValues();
     selectIndustryRef.resetSelectedValues();
     selectSourceRef.resetSelectedValues();
+    selectStageRef.resetSelectedValues();
     selectStatusRef.resetSelectedValues();
     setIsApplyFilter(true);
   };
@@ -272,6 +286,27 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
                 style={customStyles}
                 options={statusOptions}
                 selectedValues={rememberStatus}
+                displayValue="name"
+              />
+            </li>
+            <li className="px-5 pb-5">
+              <h5 className="text-xs font-normal">STAGE</h5>
+              <Multiselect
+                closeOnSelect={true}
+                ref={ref => setSelectStageRef(ref)}
+                onSelect={(selectedOptions) =>
+                  setQueryParams(prevState => ({
+                    ...prevState,
+                    stage_codes: selectedOptions.map((selectedOption) => selectedOption.id )
+                  }))}
+                onRemove={(selectedOptions) =>
+                  setQueryParams(prevState => ({
+                    ...prevState,
+                    stage_codes: selectedOptions.map((selectedOption) => selectedOption.id )
+                  }))}
+                style={customStyles}
+                options={stageOptions}
+                selectedValues={rememberStage}
                 displayValue="name"
               />
             </li>
