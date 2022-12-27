@@ -381,6 +381,10 @@ body {
   font-family: "Manrope", "sans-serif";
 }
 
+body.noscroll {
+  overflow: hidden;
+}
+
 .example-enter {
   opacity: 0.01;
 }

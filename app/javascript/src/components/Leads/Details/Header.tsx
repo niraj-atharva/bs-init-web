@@ -59,6 +59,7 @@ const Header = ({
   };
 
   useEffect(() => {
+    document.body.classList.remove('noscroll');
     toggleLeadDetails(!isLeadOpen);
     setAuthHeaders();
     registerIntercepts();
@@ -89,13 +90,19 @@ const Header = ({
             {forItem === "summary" &&
               leadDetails.discarded_at ?
               <button
-                onClick={() => setShowLeadSetting(true)}
+                onClick={() => {
+                  document.body.classList.add('noscroll');
+                  setShowLeadSetting(true)
+                }}
                 className="font-bold text-xs text-red-800 tracking-widest leading-4 flex items-center ml-5"
               >
                 <Gear size={15} className="mr-2.5 text-red-800" />
                   SETTINGS
               </button> : <button
-                onClick={() => setShowLeadSetting(true)}
+                onClick={() => {
+                  document.body.classList.add('noscroll');
+                  setShowLeadSetting(true)
+                }}
                 className="font-bold text-xs text-col-han-app-1000 tracking-widest leading-4 flex items-center ml-5"
               >
                 <Gear size={15} className="mr-2.5 text-col-han-app-1000" />

@@ -137,12 +137,15 @@ const LeadSettings = ({ leadDetails, setLeadDetails, setShowLeadSetting }) => {
   };
 
   return (
-    <div className="sidebar__container flex flex-col p-6 justify-between">
+    <div className="sidebar__container flex flex-col p-6 justify-between overflow-auto">
       <div>
 
         <span className="mb-3 flex justify-between font-extrabold text-base text-miru-dark-purple-1000 leading-5">
           Lead Settings
-          <button onClick={() => setShowLeadSetting(false)}>
+          <button onClick={() => {
+            document.body.classList.remove('noscroll');
+            setShowLeadSetting(false)
+          }}>
             <X size={15} color="#CDD6DF" />
           </button>
         </span>
