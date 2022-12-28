@@ -1,7 +1,7 @@
 export const currencyList = [
   {
     "name": "Indian Rupee",
-    "symbol": "Rs",
+    "symbol": "₹",
     "symbolNative": "টকা",
     "code": "INR",
     "namePlural": "Indian rupees"

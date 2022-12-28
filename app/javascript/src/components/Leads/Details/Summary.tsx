@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 
+import { currencyList } from "constants/currencyList";
+
 import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
-import * as Yup from "yup";
 import Select from "react-select";
-import { currencyList } from "constants/currencyList";
+import * as Yup from "yup";
 
 import leadItemsApi from "apis/lead-items";
 import leads from "apis/leads";
@@ -76,12 +77,21 @@ const Summary = ({
   const [techStacks, setTechStacks] = useState<any>([]);
 
   const getCurrencies = async () => {
-    const currencies = currencyList.map((item) => ({
-      value: item.code,
-      label: `${item.name} (${item.symbol})`
-    }));
+    const topCurrencies = currencyList.filter((item) => ['INR', 'USD', 'GBP'].includes(item.code));
+    const currencies = [
+      topCurrencies.map((item) => ({
+        value: item.code,
+        label: `${item.name} (${item.symbol})`
+      })),
+      { value: '-', label: '---', isDisabled: true },
+      currencyList.filter(val => !topCurrencies.includes(val)).map((item) => ({
+        value: item.code,
+        label: `${item.name} (${item.symbol})`
+      }))].flat();
     setCurrenciesOption(currencies);
   };
+
+  const formattedCurrency = (currency: Record<string, string>) => currency && `${currency.name} (${currency.symbol})`;
 
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -183,7 +193,6 @@ const Summary = ({
     });
   };
 
-
   return (
     <React.Fragment>
 
@@ -254,17 +263,17 @@ const Summary = ({
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                      <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                  <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
-                  {isEdit ? <Select
-                    className=""
-                    name="base_currency"
-                    classNamePrefix="react-select-filter"
-                    options={currenciesOption}
-                    onChange={handleCurrencyChange}
-                    value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
-                  /> : leadDetails.base_currency}</div>
-                </div>
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
+                          {isEdit ? <Select
+                            className=""
+                            name="base_currency"
+                            classNamePrefix="react-select-filter"
+                            options={currenciesOption}
+                            onChange={handleCurrencyChange}
+                            value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
+                          /> : formattedCurrency(currencyList.find((currency) => currency.code === leadDetails.base_currency))}</div>
+                      </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
@@ -296,8 +305,6 @@ const Summary = ({
                           </div></> : <>{leadDetails.industry_code_name}</>
                           }</div>
                       </div>
-
-
                     </div>
                     <div className="mx-auto xl:mx-0">
                       <div className="xl:w-full border-b border-gray-300 dark:border-gray-700 py-5">
