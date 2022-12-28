@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
 import * as Yup from "yup";
+import Select from "react-select";
+import { currencyList } from "constants/currencyList";
 
 import leadItemsApi from "apis/lead-items";
 import leads from "apis/leads";
@@ -32,12 +34,14 @@ const getInitialvalues = (lead) => ({
   priority_code: lead.priority_code,
   first_name: lead.first_name,
   last_name: lead.last_name,
+  job_position: lead.job_position,
   source_code: lead.source_code,
   tech_stack_ids: lead.tech_stack_ids || [],
   emails: lead.emails || [],
   websites: lead.websites || [],
   preferred_contact_method_code_name: lead.preferred_contact_method_code_name,
   source_code_name: lead.source_code_name,
+  base_currency: lead.base_currency,
   title: lead.title,
   email: lead.email,
   mobilephone: lead.mobilephone,
@@ -58,6 +62,7 @@ const Summary = ({
   const [showButton, setShowButton] = useState(false);
 
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
+  const [currenciesOption, setCurrenciesOption] = useState([]);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
   const [countryList, setCountryList] = useState<any>(null);
@@ -69,6 +74,14 @@ const Summary = ({
   const [sourceCode, setSourceCode] = useState<any>(null);
   const [country, setCountry] = useState<any>(null);
   const [techStacks, setTechStacks] = useState<any>([]);
+
+  const getCurrencies = async () => {
+    const currencies = currencyList.map((item) => ({
+      value: item.code,
+      label: `${item.name} (${item.symbol})`
+    }));
+    setCurrenciesOption(currencies);
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -104,7 +117,7 @@ const Summary = ({
           setTechStackList({});
         });
     };
-
+    getCurrencies();
     getLeadItems();
   }, [leadDetails]);
 
@@ -131,13 +144,17 @@ const Summary = ({
     setTechStacks(newStackArray);
   };
 
-  const handleSubmit = async (values) => {
+  const handleCurrencyChange = useCallback((option) => {
+    setLeadDetails({ ...leadDetails, base_currency: option.value });
+  }, [leadDetails]);
 
+  const handleSubmit = async (values) => {
     await leads.update(leadDetails.id, {
       lead: {
         "title": values.title,
         "first_name": values.first_name,
         "last_name": values.last_name,
+        "job_position": values.job_position,
         "email": values.email,
         "budget_amount": values.budget_amount,
         "description": values.description,
@@ -155,6 +172,7 @@ const Summary = ({
         "emails": values.emails || [],
         "websites": values.websites || [],
         "mobilephone": values.mobilephone,
+        "base_currency": values.base_currency,
         "telephone": values.telephone,
         "tech_stack_ids": techStacks ? techStacks.map(Number) : []
       }
@@ -164,6 +182,7 @@ const Summary = ({
       setApiError(e.message);
     });
   };
+
 
   return (
     <React.Fragment>
@@ -223,6 +242,31 @@ const Summary = ({
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Job Position</label>
+                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                            name="job_position" placeholder="Job Position" disabled={!isEdit} />
+                          <div className="flex justify-between items-center pt-1 text-red-700">
+                            {errors.job_position && touched.job_position &&
+                                <p className="text-xs">{`${errors.job_position}`}</p>
+                            }
+                          </div></> : <>{leadDetails.job_position}</>
+                          }</div>
+                      </div>
+
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                      <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                  <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
+                  {isEdit ? <Select
+                    className=""
+                    name="base_currency"
+                    classNamePrefix="react-select-filter"
+                    options={currenciesOption}
+                    onChange={handleCurrencyChange}
+                    value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
+                  /> : leadDetails.base_currency}</div>
+                </div>
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="budget_amount" type="number" min="0" placeholder="Budget Amount" disabled={!isEdit} />
@@ -253,50 +297,7 @@ const Summary = ({
                           }</div>
                       </div>
 
-                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
-                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Websites</label>
-                          {isEdit ? <FieldArray name="websites">
-                            {({ remove, push }) => (
-                              <div>
-                                {
-                                  values.websites && values.websites.length > 0 &&
-                                  values.websites.map((websites, index) => (
-                                    <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
-                                      <div className="col-span-11">
-                                        <Field
-                                          className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                                          name={`websites.${index}`}
-                                          placeholder="Website"
-                                          disabled={!isEdit}
-                                        />
-                                        <div className="flex justify-between items-center pt-1 text-red-700">
-                                          {errors.websites && touched.websites &&
-                                            <p className="text-xs">{`${errors.websites}`}</p>
-                                          }
-                                        </div>
-                                      </div>
-                                      {isEdit &&
-                                        <div>
-                                          <svg onClick={() => remove(index)} className="mt-2 fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
-                                        </div>
-                                      }
-                                    </div>
-                                  ))
-                                }
-                                <button
-                                  type="button"
-                                  className="mt-4 w-2/6 header__button text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                                  onClick={() => push('')}
-                                  disabled={!isEdit}
-                                >
-                                  Add Website
-                                </button>
-                              </div>
-                            )}
-                          </FieldArray> : <>{leadDetails.websites?.join(", ")}</>
-                          }</div>
-                      </div>
+
                     </div>
                     <div className="mx-auto xl:mx-0">
                       <div className="xl:w-full border-b border-gray-300 dark:border-gray-700 py-5">
@@ -342,7 +343,50 @@ const Summary = ({
                           </div></> : <>{leadDetails.source_code_name}</>
                           }</div>
                       </div>
-
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
+                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                          <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Websites</label>
+                          {isEdit ? <FieldArray name="websites">
+                            {({ remove, push }) => (
+                              <div>
+                                {
+                                  values.websites && values.websites.length > 0 &&
+                                  values.websites.map((websites, index) => (
+                                    <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
+                                      <div className="col-span-11">
+                                        <Field
+                                          className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                          name={`websites.${index}`}
+                                          placeholder="Website"
+                                          disabled={!isEdit}
+                                        />
+                                        <div className="flex justify-between items-center pt-1 text-red-700">
+                                          {errors.websites && touched.websites &&
+                                            <p className="text-xs">{`${errors.websites}`}</p>
+                                          }
+                                        </div>
+                                      </div>
+                                      {isEdit &&
+                                        <div>
+                                          <svg onClick={() => remove(index)} className="mt-2 fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" /></svg>
+                                        </div>
+                                      }
+                                    </div>
+                                  ))
+                                }
+                                <button
+                                  type="button"
+                                  className="mt-4 w-2/6 header__button text-sm disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                                  onClick={() => push('')}
+                                  disabled={!isEdit}
+                                >
+                                  Add Website
+                                </button>
+                              </div>
+                            )}
+                          </FieldArray> : <>{leadDetails.websites?.join(", ")}</>
+                          }</div>
+                      </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Description</label>
@@ -390,7 +434,7 @@ const Summary = ({
                           {isEdit ? <><select
                             defaultValue={leadDetails.country}
                             className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="industry_code" onChange={(e) => setCountry(e.target.value)} disabled={!isEdit} >
+                            name="country" onChange={(e) => setCountry(e.target.value)} disabled={!isEdit} >
                             <option value=''>Select Country</option>
                             <option value="US" key="US">United States of America</option>
                             <option value="CA" key="CA">Canada</option>
