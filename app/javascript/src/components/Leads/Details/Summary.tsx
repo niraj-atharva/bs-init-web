@@ -91,6 +91,14 @@ const Summary = ({
     setCurrenciesOption(currencies);
   };
 
+  const setIndustries = async (data) => {
+    const industries = data.map((item) => ({
+      value: item.id,
+      label: item.name
+    }));
+    setIndustryCodeList(industries);
+  };
+
   const formattedCurrency = (currency: Record<string, string>) => currency && `${currency.name} (${currency.symbol})`;
 
   useEffect(() => {
@@ -114,13 +122,13 @@ const Summary = ({
     const getLeadItems = async () => {
       leadItemsApi.get()
         .then((data) => {
-          setIndustryCodeList(data.data.industry_codes);
+          setIndustries(data.data.industry_codes);
           setPreferredContactMethodCodeList(data.data.preferred_contact_method_code_names);
           setSourceCodeList(data.data.source_codes);
           setCountryList(data.data.countries);
           setTechStackList(data.data.tech_stacks);
         }).catch(() => {
-          setIndustryCodeList({});
+          setIndustries({});
           setPreferredContactMethodCodeList({});
           setSourceCodeList({});
           setCountryList({});
@@ -156,6 +164,10 @@ const Summary = ({
 
   const handleCurrencyChange = useCallback((option) => {
     setLeadDetails({ ...leadDetails, base_currency: option.value });
+  }, [leadDetails]);
+
+  const handleIndustryChange = useCallback((option) => {
+    setLeadDetails({ ...leadDetails, industry_code: option.value });
   }, [leadDetails]);
 
   const handleSubmit = async (values) => {
@@ -290,22 +302,26 @@ const Summary = ({
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Industry</label>
-                          {isEdit ? <><select
-                            defaultValue={leadDetails.industry_code}
-                            className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="industry_code" onChange={(e) => setIndustryCode(e.target.value)} disabled={!isEdit} >
-                            <option value=''>Select Industry</option>
-                            {industryCodeList &&
-                              industryCodeList.map(e => <option value={e.id} key={e.id} selected={e.id === leadDetails.industry_code}>{e.name}</option>)}
-                          </select>
-                          <div className="flex justify-between items-center pt-1 text-red-700">
-                            {errors.industry_code && touched.industry_code &&
+                          {isEdit ? <>
+                            <Select
+                              className=""
+                              name="industry_code"
+                              classNamePrefix="react-select-filter"
+                              options={industryCodeList}
+                              onChange={handleIndustryChange}
+                              value={leadDetails.industry_code ? industryCodeList.find(e => e.value === leadDetails.industry_code) : {}}
+                            />
+                            <div className="flex justify-between items-center pt-1 text-red-700">
+                              {errors.industry_code && touched.industry_code &&
                                 <p className="text-xs">{`${errors.industry_code}`}</p>
-                            }
-                          </div></> : <>{leadDetails.industry_code_name}</>
-                          }</div>
+                              }
+                            </div>
+                          </> : <div className="col-span-2">{leadDetails.industry_code_name}</div>
+                          }
+                        </div>
                       </div>
                     </div>
+
                     <div className="mx-auto xl:mx-0">
                       <div className="xl:w-full border-b border-gray-300 dark:border-gray-700 py-5">
                         <div className="flex w-11/12 mx-auto xl:w-full xl:mx-0 items-center">
