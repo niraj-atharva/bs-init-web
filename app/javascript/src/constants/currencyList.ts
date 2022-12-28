@@ -1,10 +1,24 @@
 export const currencyList = [
   {
+    "name": "Indian Rupee",
+    "symbol": "Rs",
+    "symbolNative": "টকা",
+    "code": "INR",
+    "namePlural": "Indian rupees"
+  },
+  {
     "name": "US Dollar",
     "symbol": "$",
     "symbolNative": "$",
     "code": "USD",
     "namePlural": "US dollars"
+  },
+  {
+    "name": "British Pound Sterling",
+    "symbol": "£",
+    "symbolNative": "£",
+    "code": "GBP",
+    "namePlural": "British pounds sterling"
   },
   {
     "name": "Canadian Dollar",
@@ -259,13 +273,6 @@ export const currencyList = [
     "namePlural": "Ethiopian birrs"
   },
   {
-    "name": "British Pound Sterling",
-    "symbol": "£",
-    "symbolNative": "£",
-    "code": "GBP",
-    "namePlural": "British pounds sterling"
-  },
-  {
     "name": "Georgian Lari",
     "symbol": "GEL",
     "symbolNative": "GEL",
@@ -334,13 +341,6 @@ export const currencyList = [
     "symbolNative": "₪",
     "code": "ILS",
     "namePlural": "Israeli new sheqels"
-  },
-  {
-    "name": "Indian Rupee",
-    "symbol": "Rs",
-    "symbolNative": "টকা",
-    "code": "INR",
-    "namePlural": "Indian rupees"
   },
   {
     "name": "Iraqi Dinar",

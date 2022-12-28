@@ -4,6 +4,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
 import * as Yup from "yup";
 import Select from "react-select";
+import { currencyList } from "constants/currencyList";
 
 import leadItemsApi from "apis/lead-items";
 import leads from "apis/leads";
@@ -40,6 +41,7 @@ const getInitialvalues = (lead) => ({
   websites: lead.websites || [],
   preferred_contact_method_code_name: lead.preferred_contact_method_code_name,
   source_code_name: lead.source_code_name,
+  base_currency: lead.base_currency,
   title: lead.title,
   email: lead.email,
   mobilephone: lead.mobilephone,
@@ -60,6 +62,8 @@ const Summary = ({
   const [showButton, setShowButton] = useState(false);
 
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
+  const [currenciesOption, setCurrenciesOption] = useState([]);
+  const [isDetailUpdated, setIsDetailUpdated] = useState(false);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
   const [countryList, setCountryList] = useState<any>(null);
@@ -69,8 +73,17 @@ const Summary = ({
   const [industryCode, setIndustryCode] = useState<any>(null);
   const [preferredContactMethodCode, setPreferredContactMethodCode] = useState<any>(null);
   const [sourceCode, setSourceCode] = useState<any>(null);
+  const [currency, setCurrency] = useState([]);
   const [country, setCountry] = useState<any>(null);
   const [techStacks, setTechStacks] = useState<any>([]);
+
+  const getCurrencies = async () => {
+    const currencies = currencyList.map((item) => ({
+      value: item.code,
+      label: `${item.name} (${item.symbol})`
+    }));
+    setCurrenciesOption(currencies);
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -106,6 +119,7 @@ const Summary = ({
           setTechStackList({});
         });
     };
+    getCurrencies();
     getLeadItems();
   }, [leadDetails]);
 
@@ -132,6 +146,11 @@ const Summary = ({
     setTechStacks(newStackArray);
   };
 
+  const handleCurrencyChange = useCallback((option) => {
+    setLeadDetails({ ...leadDetails, base_currency: option.value });
+    setIsDetailUpdated(true);
+  }, [leadDetails]);
+
   const handleSubmit = async (values) => {
     await leads.update(leadDetails.id, {
       lead: {
@@ -156,6 +175,7 @@ const Summary = ({
         "emails": values.emails || [],
         "websites": values.websites || [],
         "mobilephone": values.mobilephone,
+        "base_currency": values.base_currency,
         "telephone": values.telephone,
         "tech_stack_ids": techStacks ? techStacks.map(Number) : []
       }
@@ -236,6 +256,19 @@ const Summary = ({
                           }</div>
                       </div>
 
+                      <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
+                      <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                  <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
+                  {isEdit ? <><Select
+                    className=""
+                    name="base_currency"
+                    classNamePrefix="react-select-filter"
+                    options={currenciesOption}
+                    onChange={handleCurrencyChange}
+                    value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
+                  /></> : <>{leadDetails.base_currency}</>
+  }</div>
+                </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
