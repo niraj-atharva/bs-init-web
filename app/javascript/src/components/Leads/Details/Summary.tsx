@@ -63,7 +63,6 @@ const Summary = ({
 
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
   const [currenciesOption, setCurrenciesOption] = useState([]);
-  const [isDetailUpdated, setIsDetailUpdated] = useState(false);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
   const [countryList, setCountryList] = useState<any>(null);
@@ -73,7 +72,6 @@ const Summary = ({
   const [industryCode, setIndustryCode] = useState<any>(null);
   const [preferredContactMethodCode, setPreferredContactMethodCode] = useState<any>(null);
   const [sourceCode, setSourceCode] = useState<any>(null);
-  const [currency, setCurrency] = useState([]);
   const [country, setCountry] = useState<any>(null);
   const [techStacks, setTechStacks] = useState<any>([]);
 
@@ -148,7 +146,6 @@ const Summary = ({
 
   const handleCurrencyChange = useCallback((option) => {
     setLeadDetails({ ...leadDetails, base_currency: option.value });
-    setIsDetailUpdated(true);
   }, [leadDetails]);
 
   const handleSubmit = async (values) => {
@@ -259,15 +256,14 @@ const Summary = ({
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                       <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
                   <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
-                  {isEdit ? <><Select
+                  {isEdit ? <Select
                     className=""
                     name="base_currency"
                     classNamePrefix="react-select-filter"
                     options={currenciesOption}
                     onChange={handleCurrencyChange}
                     value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
-                  /></> : <>{leadDetails.base_currency}</>
-  }</div>
+                  /> : leadDetails.base_currency}</div>
                 </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
                         <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
