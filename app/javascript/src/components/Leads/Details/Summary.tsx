@@ -4,11 +4,13 @@ import { currencyList } from "constants/currencyList";
 
 import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import * as Yup from "yup";
 
 import leadItemsApi from "apis/lead-items";
 import leads from "apis/leads";
+import Toastr from "common/Toastr";
 
 import { unmapLeadDetails } from "../../../mapper/lead.mapper";
 
@@ -70,11 +72,12 @@ const Summary = ({
   const [techStackList, setTechStackList] = useState<any>(null);
   const [selectedTechStacks, setSelectedTechStacks] = useState<any>(null);
 
-  const [industryCode, setIndustryCode] = useState<any>(null);
   const [preferredContactMethodCode, setPreferredContactMethodCode] = useState<any>(null);
   const [sourceCode, setSourceCode] = useState<any>(null);
   const [country, setCountry] = useState<any>(null);
   const [techStacks, setTechStacks] = useState<any>([]);
+
+  const navigate = useNavigate();
 
   const getCurrencies = async () => {
     const topCurrencies = currencyList.filter((item) => ['INR', 'USD', 'GBP'].includes(item.code));
@@ -171,38 +174,45 @@ const Summary = ({
   }, [leadDetails]);
 
   const handleSubmit = async (values) => {
-    await leads.update(leadDetails.id, {
-      lead: {
-        "title": values.title,
-        "first_name": values.first_name,
-        "last_name": values.last_name,
-        "job_position": values.job_position,
-        "email": values.email,
-        "budget_amount": values.budget_amount,
-        "description": values.description,
-        "industry_code": industryCode || values.industry_code,
-        "donotemail": values.donotemail,
-        "donotbulkemail": values.donotbulkemail,
-        "donotfax": values.donotfax,
-        "donotphone": values.donotphone,
-        "preferred_contact_method_code": preferredContactMethodCode || values.preferred_contact_method_code,
-        "source_code": sourceCode || values.source_code,
-        "address": values.address,
-        "country": country || values.country,
-        "skypeid": values.skypeid,
-        "linkedinid": values.linkedinid,
-        "emails": values.emails || [],
-        "websites": values.websites || [],
-        "mobilephone": values.mobilephone,
-        "base_currency": values.base_currency,
-        "telephone": values.telephone,
-        "tech_stack_ids": techStacks ? techStacks.map(Number) : []
-      }
-    }).then((res) => {
-      setLeadDetails(unmapLeadDetails(res).leadDetails);
-    }).catch((e) => {
-      setApiError(e.message);
-    });
+    const fields = {
+      "title": values.title,
+      "first_name": values.first_name,
+      "last_name": values.last_name,
+      "job_position": values.job_position,
+      "email": values.email,
+      "budget_amount": values.budget_amount,
+      "description": values.description,
+      "industry_code": values.industry_code,
+      "donotemail": values.donotemail,
+      "donotbulkemail": values.donotbulkemail,
+      "donotfax": values.donotfax,
+      "donotphone": values.donotphone,
+      "preferred_contact_method_code": preferredContactMethodCode || values.preferred_contact_method_code,
+      "source_code": sourceCode || values.source_code,
+      "address": values.address,
+      "country": country || values.country,
+      "skypeid": values.skypeid,
+      "linkedinid": values.linkedinid,
+      "emails": values.emails || [],
+      "websites": values.websites || [],
+      "mobilephone": values.mobilephone,
+      "base_currency": values.base_currency,
+      "telephone": values.telephone,
+      "tech_stack_ids": techStacks ? techStacks.map(Number) : []
+    }
+    if (leadDetails.id) {
+      await leads.update(leadDetails.id, { lead: fields }).then((res) => {
+        setLeadDetails(unmapLeadDetails(res).leadDetails);
+      }).catch((e) => {
+        setApiError(e.message);
+      });
+    } else {
+      Object.assign(fields, { "quality_code": 0, "status_code": 0 })
+      await leads.create(fields).then(res => {
+        navigate(`/leads/${res.data.id}`);
+        Toastr.success("Lead added successfully");
+      });
+    }
   };
 
   return (
@@ -220,10 +230,10 @@ const Summary = ({
               <p className="tracking-wider mt-3 block text-xs text-red-600">{apiError}</p>
               <div className="container mx-auto bg-white dark:bg-gray-800 rounded">
                 <div className="mx-auto">
-                  <div className="grid gap-4 grid-cols-2">
+                  <div className="grid grid-cols-2">
                     <div className="mx-auto xl:mx-0">
                       <div className="mt-8 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Project Name</label>
                           {isEdit ? <> <Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="title" placeholder="Title" disabled={!isEdit} />
@@ -231,12 +241,12 @@ const Summary = ({
                             {errors.title && touched.title &&
                                 <p className="text-xs">{`${errors.title}`}</p>
                             }
-                          </div></> : <>{leadDetails.title}</>
+                          </div></> : <div className="col-span-2">{leadDetails.title}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">First Name</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="first_name" placeholder="First Name" disabled={!isEdit} />
@@ -244,12 +254,12 @@ const Summary = ({
                             {errors.first_name && touched.first_name &&
                                 <p className="text-xs">{`${errors.first_name}`}</p>
                             }
-                          </div></> : <>{leadDetails.first_name}</>
+                          </div></> : <div className="col-span-2">{leadDetails.first_name}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Last Name</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="last_name" placeholder="Last Name" disabled={!isEdit} />
@@ -257,12 +267,12 @@ const Summary = ({
                             {errors.last_name && touched.last_name &&
                                 <p className="text-xs">{`${errors.last_name}`}</p>
                             }
-                          </div></> : <>{leadDetails.last_name}</>
+                          </div></> : <div className="col-span-2">{leadDetails.last_name}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Job Position</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="job_position" placeholder="Job Position" disabled={!isEdit} />
@@ -270,37 +280,43 @@ const Summary = ({
                             {errors.job_position && touched.job_position &&
                                 <p className="text-xs">{`${errors.job_position}`}</p>
                             }
-                          </div></> : <>{leadDetails.job_position}</>
+                          </div></> : <div className="col-span-2">{leadDetails.job_position}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
-                          {isEdit ? <Select
-                            className=""
-                            name="base_currency"
-                            classNamePrefix="react-select-filter"
-                            options={currenciesOption}
-                            onChange={handleCurrencyChange}
-                            value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
-                          /> : formattedCurrency(currencyList.find((currency) => currency.code === leadDetails.base_currency))}</div>
+                          {isEdit ?
+                            <Select
+                              className=""
+                              name="base_currency"
+                              classNamePrefix="react-select-filter"
+                              options={currenciesOption}
+                              onChange={handleCurrencyChange}
+                              value={leadDetails.base_currency ? currenciesOption.find(e => e.value === leadDetails.base_currency) : { label: "US Dollar ($)", value: "USD" }}
+                            /> : <div className="col-span-2">
+                              {formattedCurrency(currencyList.find((currency) => currency.code === leadDetails.base_currency))}
+                            </div>
+                          }</div>
                       </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Approx Budget</label>
-                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="budget_amount" type="number" min="0" placeholder="Budget Amount" disabled={!isEdit} />
-                          <div className="flex justify-between items-center pt-1 text-red-700">
-                            {errors.budget_amount && touched.budget_amount &&
+                          {isEdit ? <>
+                            <Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                              name="budget_amount" type="number" min="0" placeholder="Budget Amount" disabled={!isEdit} />
+                            <div className="flex justify-between items-center pt-1 text-red-700">
+                              {errors.budget_amount && touched.budget_amount &&
                                 <p className="text-xs">{`${errors.budget_amount}`}</p>
-                            }
-                          </div></> : <>{leadDetails.budget_amount}</>
+                              }
+                            </div>
+                          </> : <div className="col-span-2">{leadDetails.budget_amount}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Industry</label>
                           {isEdit ? <>
                             <Select
@@ -330,7 +346,7 @@ const Summary = ({
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Contact Method</label>
                           {isEdit ? <><select
                             defaultValue={leadDetails.preferred_contact_method_code}
@@ -344,12 +360,12 @@ const Summary = ({
                             {errors.preferred_contact_method_code && touched.preferred_contact_method_code &&
                                 <p className="text-xs">{`${errors.preferred_contact_method_code}`}</p>
                             }
-                          </div></> : <>{leadDetails.preferred_contact_method_code_name}</>
+                          </div></> : <div className="col-span-2">{leadDetails.preferred_contact_method_code_name}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Source</label>
                           {isEdit ? <><select
                             defaultValue={leadDetails.source_code}
@@ -363,18 +379,18 @@ const Summary = ({
                             {errors.source_code && touched.source_code &&
                                 <p className="text-xs">{`${errors.source_code}`}</p>
                             }
-                          </div></> : <>{leadDetails.source_code_name}</>
+                          </div></> : <div className="col-span-2">{leadDetails.source_code_name}</div>
                           }</div>
                       </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Websites</label>
                           {isEdit ? <FieldArray name="websites">
                             {({ remove, push }) => (
                               <div>
                                 {
                                   values.websites && values.websites.length > 0 &&
-                                  values.websites.map((websites, index) => (
+                                  values.websites.map((website, index) => (
                                     <div className="grid grid-flow-row-dense grid-cols-12 gap-2" key={index}>
                                       <div className="col-span-11">
                                         <Field
@@ -411,7 +427,7 @@ const Summary = ({
                           }</div>
                       </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Description</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="description" as="textarea" rows={8} placeholder="Description" disabled={!isEdit} />
@@ -419,12 +435,12 @@ const Summary = ({
                             {errors.description && touched.description &&
                                 <p className="text-xs">{`${errors.description}`}</p>
                             }
-                          </div></> : <>{leadDetails.description}</>
+                          </div></> : <div className="col-span-2">{leadDetails.description}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Tech Stacks</label>
                           {isEdit ? <><Multiselect
                             closeOnSelect={true}
@@ -435,7 +451,7 @@ const Summary = ({
                             onRemove={((selectedList) => addRemoveStack(selectedList))}
                             displayValue="name"
                             disable={!isEdit} />
-                          </> : <>{leadDetails.tech_stack_names?.join(", ")}</>
+                          </> : <div className="col-span-2">{leadDetails.tech_stack_names?.join(", ")}</div>
                           }</div>
                       </div>
                     </div>
@@ -449,10 +465,10 @@ const Summary = ({
                   </div>
                 </div>
                 <div className="mx-auto">
-                  <div className="grid gap-4 grid-cols-2">
+                  <div className="grid grid-cols-2">
                     <div className="mx-auto xl:mx-0">
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Country</label>
                           {isEdit ? <><select
                             defaultValue={leadDetails.country}
@@ -469,25 +485,27 @@ const Summary = ({
                             {errors.country && touched.country &&
                                 <p className="text-xs">{`${errors.country}`}</p>
                             }
-                          </div></> : <>{leadDetails.country}</>
+                          </div></> : <div className="col-span-2">{leadDetails.country}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Address</label>
-                          {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
-                            name="address" as="textarea" rows={8} placeholder="Address" disabled={!isEdit} />
-                          <div className="flex justify-between items-center pt-1 text-red-700">
-                            {errors.address && touched.address &&
-                                <p className="text-xs">{`${errors.address}`}</p>
-                            }
-                          </div></> : <>{leadDetails.address}</>
+                          {isEdit ? <>
+                            <Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
+                              name="address" as="textarea" rows={8} placeholder="Address" disabled={!isEdit} />
+                            <div className="flex justify-between items-center pt-1 text-red-700">
+                              {errors.address && touched.address &&
+                                  <p className="text-xs">{`${errors.address}`}</p>
+                              }
+                            </div>
+                          </> : <div className="col-span-2">{leadDetails.address}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Mobile Phone</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="mobilephone" placeholder="Mobile Phone" disabled={!isEdit} />
@@ -495,12 +513,12 @@ const Summary = ({
                             {errors.mobilephone && touched.mobilephone &&
                                 <p className="text-xs">{`${errors.mobilephone}`}</p>
                             }
-                          </div></> : <>{leadDetails.mobilephone}</>
+                          </div></> : <div className="col-span-2">{leadDetails.mobilephone}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Tele Phone</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="telephone" placeholder="Tele Phone" disabled={!isEdit} />
@@ -508,14 +526,14 @@ const Summary = ({
                             {errors.telephone && touched.telephone &&
                                 <p className="text-xs">{`${errors.telephone}`}</p>
                             }
-                          </div></> : <>{leadDetails.telephone}</>
+                          </div></> : <div className="col-span-2">{leadDetails.telephone}</div>
                           }</div>
                       </div>
                     </div>
 
                     <div className="mx-auto xl:mx-0">
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Primary Email</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="email" placeholder="Primary Email" disabled={!isEdit} />
@@ -523,11 +541,11 @@ const Summary = ({
                             {errors.email && touched.email &&
                                 <p className="text-xs">{`${errors.email}`}</p>
                             }
-                          </div></> : <>{leadDetails.email}</>
+                          </div></> : <div className="col-span-2">{leadDetails.email}</div>
                           }</div>
                       </div>
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Other Emails</label>
                           {isEdit ? <FieldArray name="emails">
                             {({ remove, push }) => (
@@ -567,12 +585,12 @@ const Summary = ({
                                 </button>
                               </div>
                             )}
-                          </FieldArray> : <>{leadDetails.emails?.join(", ")}</>
+                          </FieldArray> : <div className="col-span-2">{leadDetails.emails?.join(", ")}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Skype ID</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="skypeid" placeholder="Skpe ID" disabled={!isEdit} />
@@ -580,12 +598,12 @@ const Summary = ({
                             {errors.skypeid && touched.skypeid &&
                                 <p className="text-xs">{`${errors.skypeid}`}</p>
                             }
-                          </div></> : <>{leadDetails.skypeid}</>
+                          </div></> : <div className="col-span-2">{leadDetails.skypeid}</div>
                           }</div>
                       </div>
 
                       <div className="mt-4 flex flex-col lg:w-9/12 md:w-1/2 w-full">
-                        <div className={isEdit ? null : "grid grid-cols-3 gap-4"}>
+                        <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Linkedin ID</label>
                           {isEdit ? <><Field className="w-full border border-gray-400 p-1 shadow-sm rounded text-sm focus:outline-none focus:border-blue-700 bg-transparent placeholder-gray-500 text-gray-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:shadow-none"
                             name="linkedinid" placeholder="Linkedin ID" disabled={!isEdit} />
@@ -593,7 +611,7 @@ const Summary = ({
                             {errors.linkedinid && touched.linkedinid &&
                                 <p className="text-xs">{`${errors.linkedinid}`}</p>
                             }
-                          </div></> : <>{leadDetails.linkedinid}</>
+                          </div></> : <div className="col-span-2">{leadDetails.linkedinid}</div>
                           }</div>
 
                       </div>

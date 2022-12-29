@@ -15,7 +15,6 @@ import Header from "./Header";
 import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapLeadList } from "../../../mapper/lead.mapper";
 import DeleteLead from "../Modals/DeleteLead";
-import NewLead from "../Modals/NewLead";
 
 const getTableData = (leads) => {
   if (leads) {
@@ -45,10 +44,9 @@ const getTableData = (leads) => {
 };
 
 const Leads = ({ permissions }) => {
-  const [isFilterVisible, setFilterVisibilty] = React.useState<boolean>(false);
+  const [isFilterVisible, setFilterVisibility] = React.useState<boolean>(false);
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [newLead, setnewLead] = useState<boolean>(false);
   const [leadToDelete, setDelete] = useState({});
   const [leadData, setLeadData] = useState<any>([]);
   const [displayActions, setDisplayActions] = useState<boolean>(false);
@@ -74,6 +72,10 @@ const Leads = ({ permissions }) => {
     navigate(`${id}`);
   };
 
+  const handleNewClick = () => {
+    navigate('new');
+  };
+
   const fetchLeads = () => {
     if (rememberFilter.leadsFilter && Object.values(rememberFilter.leadsFilter).flat().length > 0){
       leads.get(new URLSearchParams(rememberFilter.leadsFilter).toString())
@@ -81,7 +83,7 @@ const Leads = ({ permissions }) => {
           const sanitized = unmapLeadList(res);
           setLeadData(sanitized.leadList);
           setPagy(res.data.pagy);
-          setFilterVisibilty(true);
+          setFilterVisibility(true);
         });
     } else {
       leads.get(queryParams())
@@ -148,7 +150,7 @@ const Leads = ({ permissions }) => {
   return (
     <>
       <ToastContainer autoClose={TOASTER_DURATION} />
-      <Header isAdminUser={permissions.leads} setnewLead={setnewLead} setFilterVisibilty={setFilterVisibilty}
+      <Header isAdminUser={permissions.leads} handleNewClick={handleNewClick} setFilterVisibility={setFilterVisibility}
         isFilterVisible={isFilterVisible} setDisplayActions={setDisplayActions} />
       <div>
         <div className="flex flex-col">
@@ -172,7 +174,11 @@ const Leads = ({ permissions }) => {
         </div>
       </div>
       {isFilterVisible && (
-        <FilterSideBar setLeadData={setLeadData} setFilterVisibilty={setFilterVisibilty} rememberFilter={rememberFilter} setRememberFilter={setRememberFilter} />
+        <FilterSideBar
+          setLeadData={setLeadData}
+          setFilterVisibility={setFilterVisibility}
+          rememberFilter={rememberFilter} setRememberFilter={setRememberFilter}
+        />
       )}
       {showDeleteDialog && (
         <DeleteLead
@@ -180,13 +186,7 @@ const Leads = ({ permissions }) => {
           lead={leadToDelete}
         />
       )}
-      {newLead && (
-        <NewLead
-          setnewLead={setnewLead}
-        />
-      )}
     </>
-
   );
 };
 

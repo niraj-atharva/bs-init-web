@@ -10,10 +10,10 @@ import AutoComplete from "./AutoComplete";
 import { unmapLeadListForDropdown } from "../../../mapper/lead.mapper";
 
 const Header = ({
-  setnewLead,
+  handleNewClick,
   isAdminUser,
   isFilterVisible,
-  setFilterVisibilty,
+  setFilterVisibility,
   setDisplayActions
 }) => {
 
@@ -42,7 +42,7 @@ const Header = ({
             <MagnifyingGlass size={12} />
           </button>
         </div>
-        <button className="ml-7" onClick={() => setFilterVisibilty(!isFilterVisible)}>
+        <button className="ml-7" onClick={() => setFilterVisibility(!isFilterVisible)}>
           <Funnel size={16} />
         </button>
       </div>
@@ -64,7 +64,7 @@ const Header = ({
           <button
             type="button"
             className="header__button"
-            onClick={() => setnewLead(true)}
+            onClick={() => handleNewClick()}
           >
             <Plus weight="fill" size={16} />
             <span className="ml-1 inline-block">NEW LEAD</span>

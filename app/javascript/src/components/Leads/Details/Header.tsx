@@ -9,7 +9,6 @@ import leads from "apis/leads";
 import { unmapLeadList } from "../../../mapper/lead.mapper";
 import getStatusCssClass from "../../../utils/getBadgeStatus";
 import DeleteLead from "../Modals/DeleteLead";
-import NewLead from "../Modals/NewLead";
 
 const Header = ({
   leadDetails,
@@ -21,7 +20,6 @@ const Header = ({
   setIsEdit }) => {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [newLead, setnewLead] = useState<boolean>(false);
   const [leadToDelete, setDelete] = useState({});
   const [leadData, setLeadData] = useState<any>();
 
@@ -154,7 +152,7 @@ const Header = ({
                   </button>
                   { isHeaderMenuVisible && <ul className="menuButton__wrapper">
                     <li>
-                      <button className="menuButton__list-item" onClick={() => setnewLead(true)}>
+                      <button className="menuButton__list-item" onClick={() => navigate('/leads/new')}>
                         <Receipt size={16} className="text-col-han-app-1000" weight="bold" />
                         <span className="ml-3">Add Lead</span>
                       </button>
@@ -223,11 +221,6 @@ const Header = ({
         <DeleteLead
           setShowDeleteDialog={setShowDeleteDialog}
           lead={leadToDelete}
-        />
-      )}
-      {newLead && (
-        <NewLead
-          setnewLead={setnewLead}
         />
       )}
     </>

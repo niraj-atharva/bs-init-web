@@ -32,6 +32,7 @@ import SpaceUsages from "../components/SpaceUsages/Index";
 import PlanSelection from "../components/Subscriptions/PlanSelection";
 import TeamRouteConfig from "../components/Team/RouteConfig";
 import TimeTracking from "../components/TimeTracking";
+import NewLead from "components/Leads/New";
 
 const ClientsRoutes = [
   { path: "" ,Component: ClientList },
@@ -99,6 +100,7 @@ const EngagementRoutes = [
 const LeadsRoutes = [
   { path: "" , Component: LeadList },
   { path: "actions" ,Component: LeadActions },
+  { path: "new" ,Component: NewLead },
   { path: ":leadId" ,Component: LeadDetails },
   { path: ":leadId/timelines" ,Component: LeadDetails },
   { path: ":leadId/line-items" ,Component: LeadDetails },

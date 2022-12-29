@@ -9,7 +9,7 @@ import leads from "apis/leads";
 
 import { unmapLeadList } from "../../../../mapper/lead.mapper";
 
-const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRememberFilter }) => {
+const FilterSideBar = ({ setLeadData, setFilterVisibility, rememberFilter, setRememberFilter }) => {
   const [allowUserList, setAllowUserLIst] = useState<any>([{}]);
   const [qualityOptions, setQualityOptions] = useState<any>([{}]);
   const [statusOptions, setStatusOptions] = useState<any>([{}]);
@@ -157,7 +157,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
             const sanitized = unmapLeadList(res);
             setLeadData(sanitized.leadList);
             setIsApplyFilter(false);
-            setFilterVisibilty(false);
+            setFilterVisibility(false);
           });
       };
 
@@ -199,7 +199,7 @@ const FilterSideBar = ({ setLeadData, setFilterVisibilty, rememberFilter, setRem
           <h4 className="text-base font-bold">
             Filter
           </h4>
-          <button onClick = {() => setFilterVisibilty(false)}>
+          <button onClick = {() => setFilterVisibility(false)}>
             <X size={12} />
           </button>
         </div>
