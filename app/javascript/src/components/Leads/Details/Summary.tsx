@@ -30,7 +30,7 @@ const getInitialvalues = (lead) => ({
   name: lead.name,
   description: lead.description,
   budget_amount: lead.budget_amount,
-  industry_code: lead.industry_code,
+  industry_code_id: lead.industry_code_id,
   donotemail: lead.donotemail,
   donotbulkemail: lead.donotbulkemail,
   donotfax: lead.donotfax,
@@ -201,7 +201,7 @@ const Summary = ({
   }, [leadDetails]);
 
   const handleIndustryChange = useCallback((option) => {
-    setLeadDetails({ ...leadDetails, industry_code: option.value });
+    setLeadDetails({ ...leadDetails, industry_code_id: option.value });
   }, [leadDetails]);
 
   const handleCreate = useCallback((inputValue: string) => {
@@ -231,7 +231,7 @@ const Summary = ({
       "email": values.email,
       "budget_amount": values.budget_amount,
       "description": values.description,
-      "industry_code": values.industry_code,
+      "industry_code_id": values.industry_code_id,
       "donotemail": values.donotemail,
       "donotbulkemail": values.donotbulkemail,
       "donotfax": values.donotfax,
@@ -369,16 +369,16 @@ const Summary = ({
                           {isEdit ? <>
                             <CreatableSelect
                               className=""
-                              name="industry_code"
+                              name="industry_code_id"
                               classNamePrefix="react-select-filter"
                               onCreateOption={handleCreate}
                               options={industryCodeList}
                               onChange={handleIndustryChange}
-                              value={leadDetails.industry_code && industryCodeList.find(e => e.value === leadDetails.industry_code)}
+                              value={leadDetails.industry_code_id && industryCodeList.find(e => e.value === leadDetails.industry_code_id)}
                             />
                             <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.industry_code && touched.industry_code &&
-                                <p className="text-xs">{`${errors.industry_code}`}</p>
+                              {errors.industry_code_id && touched.industry_code_id &&
+                                <p className="text-xs">{`${errors.industry_code_id}`}</p>
                               }
                             </div>
                           </> : <div className="col-span-2">{leadDetails.industry_code_name}</div>
