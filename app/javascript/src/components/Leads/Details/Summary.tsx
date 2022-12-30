@@ -7,6 +7,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import CreatableSelect from 'react-select/creatable';
 import * as Yup from "yup";
 
 import leadItemsApi from "apis/lead-items";
@@ -29,7 +30,7 @@ const getInitialvalues = (lead) => ({
   name: lead.name,
   description: lead.description,
   budget_amount: lead.budget_amount,
-  industry_code: lead.industry_code,
+  industry_code_id: lead.industry_code_id,
   donotemail: lead.donotemail,
   donotbulkemail: lead.donotbulkemail,
   donotfax: lead.donotfax,
@@ -64,11 +65,11 @@ const Summary = ({
 
   const [apiError, setApiError] = useState<string>("");
   const [showButton, setShowButton] = useState(false);
-
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
   const [currenciesOption, setCurrenciesOption] = useState([]);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
+  const [customIndustries, setCustomIndustries] = useState<any>(null);
   const [countriesOption, setCountriesOption] = useState<any>(null);
   const [techStackList, setTechStackList] = useState<any>(null);
   const [selectedTechStacks, setSelectedTechStacks] = useState<any>(null);
@@ -115,6 +116,7 @@ const Summary = ({
       value: item.id,
       label: item.name
     }));
+    industries.concat(customIndustries);
     setIndustryCodeList(industries);
   };
 
@@ -199,8 +201,14 @@ const Summary = ({
   }, [leadDetails]);
 
   const handleIndustryChange = useCallback((option) => {
-    setLeadDetails({ ...leadDetails, industry_code: option.value });
+    setLeadDetails({ ...leadDetails, industry_code_id: option.value });
   }, [leadDetails]);
+
+  const handleCreate = useCallback((inputValue: string) => {
+    const newOption = { value: inputValue, label: inputValue };
+    setIndustryCodeList((prev) => [...prev, newOption]);
+    setCustomIndustries({ ...customIndustries, newOption });
+  }, []);
 
   const handlePreferredContactMethodCodeChange = useCallback((option) => {
     setLeadDetails({ ...leadDetails, preferred_contact_method_code: option.value });
@@ -223,7 +231,7 @@ const Summary = ({
       "email": values.email,
       "budget_amount": values.budget_amount,
       "description": values.description,
-      "industry_code": values.industry_code,
+      "industry_code_id": values.industry_code_id,
       "donotemail": values.donotemail,
       "donotbulkemail": values.donotbulkemail,
       "donotfax": values.donotfax,
@@ -359,16 +367,18 @@ const Summary = ({
                         <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Industry</label>
                           {isEdit ? <>
-                            <Select
-                              name="industry_code"
+                            <CreatableSelect
+                              className=""
+                              name="industry_code_id"
                               classNamePrefix="react-select-filter"
+                              onCreateOption={handleCreate}
                               options={industryCodeList}
                               onChange={handleIndustryChange}
-                              value={leadDetails.industry_code && industryCodeList.find(e => e.value === leadDetails.industry_code)}
+                              value={leadDetails.industry_code_id && industryCodeList.find(e => e.value === leadDetails.industry_code_id)}
                             />
                             <div className="flex justify-between items-center pt-1 text-red-700">
-                              {errors.industry_code && touched.industry_code &&
-                                <p className="text-xs">{`${errors.industry_code}`}</p>
+                              {errors.industry_code_id && touched.industry_code_id &&
+                                <p className="text-xs">{`${errors.industry_code_id}`}</p>
                               }
                             </div>
                           </> : <div className="col-span-2">{leadDetails.industry_code_name}</div>
@@ -538,7 +548,7 @@ const Summary = ({
                               name="address" as="textarea" rows={8} placeholder="Address" disabled={!isEdit} />
                             <div className="flex justify-between items-center pt-1 text-red-700">
                               {errors.address && touched.address &&
-                                  <p className="text-xs">{`${errors.address}`}</p>
+                                <p className="text-xs">{`${errors.address}`}</p>
                               }
                             </div>
                           </> : <div className="col-span-2">{leadDetails.address}</div>

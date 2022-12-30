@@ -31,7 +31,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
 
     status_codes = Lead::STATUS_CODE_OPTIONS
 
-    industry_codes = Lead::INDUSTRY_CODE_OPTIONS
+    industry_codes = IndustryCode.all.order(name: :asc).select(:name, :id)
 
     line_item_kind_names = LeadLineItem::KIND_OPTIONS
 
@@ -96,6 +96,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
   def update
     authorize lead
     actual_lead_params = lead_params
+    actual_lead_params[:industry_code_id] = IndustryCode.find_or_create_by(name: actual_lead_params[:industry_code_id]).id if actual_lead_params[:industry_code_id].presence && actual_lead_params[:industry_code_id].to_i == 0
     actual_lead_params[:company_id] = current_company.id if lead.company_id.blank?
     actual_lead_params[:created_by_id] = current_user.id if lead.created_by_id.blank?
     actual_lead_params[:updated_by_id] = current_user.id

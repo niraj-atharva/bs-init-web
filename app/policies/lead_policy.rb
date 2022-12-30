@@ -51,7 +51,7 @@ class LeadPolicy < ApplicationPolicy
     [
       :address, :base_currency, :budget_amount,
       :country, :description, :discarded_at, :donotbulkemail,
-      :donotemail, :donotfax, :donotphone, :industry_code,
+      :donotemail, :donotfax, :donotphone, :industry_code_id,
       :linkedinid, :mobilephone, :name, :email,
       :quality_code, :skypeid, :stage_code, :status_code,
       :telephone, :timezone, :assignee_id, :reporter_id, :created_by_id,

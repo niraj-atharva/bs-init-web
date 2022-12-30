@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_27_092150) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_30_095828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -216,6 +216,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_27_092150) do
     t.index ["user_id"], name: "index_identities_on_user_id"
   end
 
+  create_table "industry_codes", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "invitations", force: :cascade do |t|
     t.bigint "company_id", null: false
     t.bigint "sender_id", null: false
@@ -356,7 +362,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_27_092150) do
     t.boolean "donotphone", default: false
     t.integer "quality_code"
     t.integer "stage_code"
-    t.integer "industry_code"
+    t.integer "industry_code_id"
     t.datetime "discarded_at"
     t.string "base_currency", default: "USD"
     t.decimal "budget_amount", default: "0.0"
