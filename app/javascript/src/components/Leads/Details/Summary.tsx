@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { currencyList } from "constants/currencyList";
+import CreatableSelect from 'react-select/creatable';
 
 import { Formik, Form, Field, FieldArray } from "formik";
 import { Multiselect } from 'multiselect-react-dropdown';
@@ -13,6 +14,8 @@ import leads from "apis/leads";
 import Toastr from "common/Toastr";
 
 import { unmapLeadDetails } from "../../../mapper/lead.mapper";
+import { Option } from "react-multi-select-component";
+import { Handler } from "puppeteer";
 
 const newLeadSchema = Yup.object().shape({
   first_name: Yup.string().required("First Name cannot be blank"),
@@ -63,11 +66,11 @@ const Summary = ({
 
   const [apiError, setApiError] = useState<string>("");
   const [showButton, setShowButton] = useState(false);
-
   const [industryCodeList, setIndustryCodeList] = useState<any>(null);
   const [currenciesOption, setCurrenciesOption] = useState([]);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
+  const [customIndustries, setCustomIndustries] = useState<any>(null);
   const [countryList, setCountryList] = useState<any>(null);
   const [techStackList, setTechStackList] = useState<any>(null);
   const [selectedTechStacks, setSelectedTechStacks] = useState<any>(null);
@@ -99,6 +102,7 @@ const Summary = ({
       value: item.id,
       label: item.name
     }));
+    industries.concat(customIndustries);
     setIndustryCodeList(industries);
   };
 
@@ -171,6 +175,14 @@ const Summary = ({
 
   const handleIndustryChange = useCallback((option) => {
     setLeadDetails({ ...leadDetails, industry_code: option.value });
+  }, [leadDetails]);
+
+  const handleCreate = useCallback((inputValue: string ) => {
+
+      const newOption = {value: inputValue, label: inputValue};
+      setIndustryCodeList((prev) => [...prev, newOption]);
+      setCustomIndustries({ ...customIndustries, newOption});
+
   }, [leadDetails]);
 
   const handleSubmit = async (values) => {
@@ -288,7 +300,7 @@ const Summary = ({
                         <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Currency</label>
                           {isEdit ?
-                            <Select
+                            <CreatableSelect
                               className=""
                               name="base_currency"
                               classNamePrefix="react-select-filter"
@@ -319,10 +331,11 @@ const Summary = ({
                         <div className={isEdit ? null : "grid grid-cols-3"}>
                           <label className="pb-2 text-sm font-bold text-gray-800 dark:text-gray-100">Industry</label>
                           {isEdit ? <>
-                            <Select
+                            <CreatableSelect
                               className=""
                               name="industry_code"
                               classNamePrefix="react-select-filter"
+                              onCreateOption={handleCreate}
                               options={industryCodeList}
                               onChange={handleIndustryChange}
                               value={leadDetails.industry_code ? industryCodeList.find(e => e.value === leadDetails.industry_code) : {}}
