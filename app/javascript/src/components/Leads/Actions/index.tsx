@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
+
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+
 import { setAuthHeaders } from "apis/axios";
 import leadAllowedUsersApi from "apis/lead-allowed-users";
 import leadTimelineItemsApi from "apis/lead-timeline-items";
 import leadTimelines from "apis/lead-timelines";
 import leads from "apis/leads";
 import Pagination from "common/Pagination";
-
 import Table from "common/Table";
 import Toastr from "common/Toastr";
+
 import Header from "./Header";
+
 import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapLeadTimelineList, unmapLeadTimelineDetails } from "../../../mapper/lead.timeline.mapper";
+import applyFilter from "../Actions/api/applyFilter";
+import Filters from "../Actions/Filters";
+import { getDate } from "../Actions/Filters/filterOptions";
 
 const Actions = () => {
   const navigate = useNavigate();
@@ -26,9 +32,20 @@ const Actions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = React.useState<any>({
     lead_actions_per_page: searchParams.get("lead_actions_per_page") || 10,
-    page: searchParams.get("page") || 1
+    page: searchParams.get("page") || 1,
+    date_range: "today"
   });
   const queryParams = () => new URLSearchParams(params).toString();
+
+  const filterIntialValues = {
+    dateRange: { label: getDate(true), value: "today" },
+  };
+
+  const [selectedFilter, setSelectedFilter] = useState(filterIntialValues);
+  const [filterCounter, setFilterCounter] = useState(0);
+  const [isFilterVisible, setFilterVisibilty] = useState<boolean>(false);
+  // const [showNavFilters, setNavFilters] = useState<boolean>(false);
+  const [selectedInput, setSelectedInput] = useState("from-input");
 
   const fetchLeadActions = () => {
     leads.getActions(queryParams())
@@ -136,16 +153,57 @@ const Actions = () => {
     return [{}];
   };
 
+  const updateFilterCounter = async () => {
+    let counter = 0;
+    for (const filterkey in selectedFilter) {
+      const filterValue = selectedFilter[filterkey];
+      if (filterkey !== "customDateFilter") {
+        continue;
+      } else if (Array.isArray(filterValue)) {
+        counter = counter + filterValue.length;
+      } else {
+        if (filterValue.value !== "") {
+          counter = counter + 1;
+        }
+      }
+    }
+    await setFilterCounter(counter);
+  };
+
   useEffect(() => {
-    fetchLeadActions();
+    updateFilterCounter();
+    applyFilter(selectedFilter, params, setParams, setFilterVisibilty);
+  }, [selectedFilter]);
+
+  const handleApplyFilter = async (filters) => {
+    setSelectedFilter(filters);
+  };
+
+  const resetFilter = () => {
+    setSelectedFilter(filterIntialValues);
+    setParams({
+      lead_actions_per_page: searchParams.get("lead_actions_per_page") || 10,
+      page: searchParams.get("page") || 1,
+      date_range: "today"
+    })
+    setFilterVisibilty(false);
+    // setNavFilters(false);
+  };
+
+  const onClickInput = (e) => {
+    setSelectedInput(e.target.name);
+  };
+
+  useEffect(() => {
     getAllowedUsers();
     getLeadTimelineItems();
+    fetchLeadActions();
     setSearchParams(params);
-  }, [params.lead_actions_per_page, params.page]);
+  }, [params.lead_actions_per_page, params.page, params.date_range, params.from, params.to]);
 
   useEffect(() => {
     setAuthHeaders();
-    fetchLeadActions();
+    // fetchLeadActions();
     getAllowedUsers();
     getLeadTimelineItems();
   }, []);
@@ -193,7 +251,19 @@ const Actions = () => {
   return (
     <>
       <ToastContainer autoClose={TOASTER_DURATION} />
-      <Header />
+      <Header
+        setFilterVisibilty={setFilterVisibilty}
+        isFilterVisible={isFilterVisible}
+        filterCounter={filterCounter}
+      />
+      {isFilterVisible && <Filters
+        handleApplyFilter={handleApplyFilter}
+        resetFilter={resetFilter}
+        setFilterVisibilty={setFilterVisibilty}
+        onClickInput={onClickInput}
+        selectedInput={selectedInput}
+        selectedFilter={selectedFilter}
+      />}
       <div>
         <div className="flex flex-col">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

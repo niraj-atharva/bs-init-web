@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-  # :assignee
+# :assignee
 json.extract! device, :id, :available, :base_os, :brand, :device_type, :manufacturer, :meta_details, :name,
   :serial_number, :specifications, :version,
   :version_id

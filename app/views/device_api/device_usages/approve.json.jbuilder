@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.success true
 json.device do
   json.partial! "device_api/devices/device", locals: { device: }

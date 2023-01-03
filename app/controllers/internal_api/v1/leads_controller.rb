@@ -15,7 +15,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
     authorize Lead
 
     pagy, lead_actions = pagy(
-      LeadTimeline.with_actions(Lead.filter(params:, user: current_user, ids: true), current_user),
+      LeadTimeline.filter(params:, user: current_user),
       items_param: :lead_actions_per_page)
     timeline_details = lead_actions.map(&:render_properties)
 
@@ -96,7 +96,11 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
   def update
     authorize lead
     actual_lead_params = lead_params
-    actual_lead_params[:industry_code_id] = IndustryCode.find_or_create_by(name: actual_lead_params[:industry_code_id]).id if actual_lead_params[:industry_code_id].presence && actual_lead_params[:industry_code_id].to_i == 0
+    actual_lead_params[:industry_code_id] =
+      IndustryCode.find_or_create_by(
+        name: actual_lead_params[:industry_code_id]).id if
+          actual_lead_params[:industry_code_id].presence &&
+            actual_lead_params[:industry_code_id].to_i == 0
     actual_lead_params[:company_id] = current_company.id if lead.company_id.blank?
     actual_lead_params[:created_by_id] = current_user.id if lead.created_by_id.blank?
     actual_lead_params[:updated_by_id] = current_user.id

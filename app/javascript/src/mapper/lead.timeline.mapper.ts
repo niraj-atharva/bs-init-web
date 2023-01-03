@@ -76,8 +76,20 @@ const unmapLeadTimelineDetails = (input) => {
   };
 };
 
+const unmapper = (input) => {
+  const {
+    lead_timelines,
+    filterOptions
+  } = input;
+  return {
+    lead_timelines,
+    filterOptions
+  };
+};
+
 export {
   unmapLeadTimelineList,
   unmapLeadTimelineDetails,
-  unmapLeadTimelineListForDropdown
+  unmapLeadTimelineListForDropdown,
+  unmapper
 };

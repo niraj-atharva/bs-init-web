@@ -95,9 +95,25 @@ class LeadTimeline < ApplicationRecord
 
   scope :with_actions, ->(lead_ids, user) {
                               where(lead_id: lead_ids)
-                                .where("action_assignee_id = ? OR action_reporter_id = ?", user.id, user.id)
+                                .where("action_assignee_id = ?", user.id)
                                 .where.not(kind: [0, nil]).order(action_due_at: :asc)
                             }
+
+  def self.filter(params: {}, user: User.none)
+    if params[:date_range].present?
+      leadtimeline_ids = []
+      leadtimeline_ids = LeadTimeline.where("DATE(action_due_at) = ?", Date.today).pluck(:id) if params[:date_range] == "today"
+      leadtimeline_ids = LeadTimeline.where("DATE(action_due_at) = ?", Date.today + 1).pluck(:id) if params[:date_range] == "tomorrow"
+      leadtimeline_ids = LeadTimeline.where("action_due_at BETWEEN ? AND ? ", Time.now.beginning_of_month, Time.now.end_of_month).pluck(:id) if params[:date_range] == "this_month"
+      leadtimeline_ids = LeadTimeline.where("action_due_at BETWEEN ? AND ? ", 1.month.ago.beginning_of_month, 1.month.ago.end_of_month).pluck(:id) if params[:date_range] == "last_month"
+      leadtimeline_ids = LeadTimeline.where("action_due_at BETWEEN ? AND ? ", Time.now.beginning_of_week, Time.now.end_of_week).pluck(:id) if params[:date_range] == "this_week"
+      leadtimeline_ids = LeadTimeline.where("action_due_at BETWEEN ? AND ? ", (Time.now - 7.days).beginning_of_week, (Time.now - 7.days).end_of_week).pluck(:id) if params[:date_range] == "last_week"
+      leadtimeline_ids = LeadTimeline.where("action_due_at BETWEEN ? AND ? ", params[:from], params[:to]).pluck(:id) if params[:date_range] == "custom"
+      LeadTimeline.with_actions(Lead.filter(params:, user:, ids: true), user).where(id: leadtimeline_ids)
+    else
+      LeadTimeline.with_actions(Lead.filter(params:, user:, ids: true), user)
+    end
+  end
 
   def created_at_formated
     self.created_at.strftime("#{self.created_at.day.ordinalize} %b %Y at %H:%M")

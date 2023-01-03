@@ -27,7 +27,7 @@ json.team teams do |company_user|
   json.role member.primary_role(current_company)
   json.status team_member_status(member)
   json.team_lead member.team_lead?
-  if  member.department_id
+  if member.department_id
     json.department do |department|
       json.id member.department_id
       json.name member.department_name
@@ -45,7 +45,7 @@ json.invitation invitations do |invitation|
   json.role invitation.role
   json.status invited_user_status(invitation)
   json.team_lead invitation.team_lead?
-  if  invitation.department_id
+  if invitation.department_id
     json.department do |department|
       json.id invitation.department_id
       json.name invitation.department_name

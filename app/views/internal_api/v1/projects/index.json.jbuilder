@@ -3,7 +3,9 @@
 json.key_format! camelize: :lower
 json.deep_format_keys!
 
-json.projects current_company.project_list(params[:client_id], policy(Project).index_all? ? nil : current_user.id, params[:billable], params[:search])
+json.projects current_company.project_list(
+  params[:client_id], policy(Project).index_all? ? nil : current_user.id,
+  params[:billable], params[:search])
 json.clients current_company_clients do |client|
   json.id client.id
   json.name client.name

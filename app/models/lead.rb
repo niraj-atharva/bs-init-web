@@ -85,7 +85,7 @@ class Lead < ApplicationRecord
 
   def validate_emails
     emails.each do |email|
-      unless email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i)
+      unless email.match?(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i)
         errors.add(:emails, "#{email} is not a valid email address.")
       end
     end
@@ -95,7 +95,7 @@ class Lead < ApplicationRecord
 
   def validate_websites
     websites.each do |website|
-      unless website.slice(URI::regexp(%w(http https))) == website
+      unless website.slice(URI.regexp(%w(http https))) == website
         errors.add(:websites, "#{website} is not a valid url.")
       end
     end
