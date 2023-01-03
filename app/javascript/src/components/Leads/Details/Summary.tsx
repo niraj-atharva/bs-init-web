@@ -65,11 +65,10 @@ const Summary = ({
 
   const [apiError, setApiError] = useState<string>("");
   const [showButton, setShowButton] = useState(false);
-  const [industryCodeList, setIndustryCodeList] = useState<any>(null);
+  const [industryCodeList, setIndustryCodeList] = useState<any>([]);
   const [currenciesOption, setCurrenciesOption] = useState([]);
   const [preferredContactMethodCodeList, setPreferredContactMethodCodeList] = useState<any>(null);
   const [sourceCodeList, setSourceCodeList] = useState<any>(null);
-  const [customIndustries, setCustomIndustries] = useState<any>(null);
   const [countriesOption, setCountriesOption] = useState<any>(null);
   const [techStackList, setTechStackList] = useState<any>(null);
   const [selectedTechStacks, setSelectedTechStacks] = useState<any>(null);
@@ -111,14 +110,13 @@ const Summary = ({
     setCountriesOption(countries);
   };
 
-  const setIndustries = async (data) => {
+  const setIndustries = useCallback(async (data) => {
     const industries = data.map((item) => ({
       value: item.id,
       label: item.name
     }));
-    industries.concat(customIndustries);
     setIndustryCodeList(industries);
-  };
+  }, []);
 
   const setPreferredContactMethodCodes = async (data) => {
     const preferredContactMethodCodes = data.map((item) => ({
@@ -171,7 +169,7 @@ const Summary = ({
     getCurrencies();
     getCountries();
     getLeadItems();
-  }, [leadDetails]);
+  }, [leadDetails.id]);
 
   useEffect(() => {
     if (techStackList && leadDetails && leadDetails.tech_stack_ids && leadDetails.tech_stack_ids.length > 0) {
@@ -206,9 +204,10 @@ const Summary = ({
 
   const handleCreate = useCallback((inputValue: string) => {
     const newOption = { value: inputValue, label: inputValue };
-    setIndustryCodeList((prev) => [...prev, newOption]);
-    setCustomIndustries({ ...customIndustries, newOption });
-  }, []);
+    industryCodeList.push(newOption)
+    setIndustryCodeList(industryCodeList);
+    setLeadDetails({ ...leadDetails, industry_code_id: newOption.value });
+  }, [industryCodeList]);
 
   const handlePreferredContactMethodCodeChange = useCallback((option) => {
     setLeadDetails({ ...leadDetails, preferred_contact_method_code: option.value });
