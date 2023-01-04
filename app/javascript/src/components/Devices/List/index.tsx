@@ -20,7 +20,7 @@ import './style.scss';
 
 import { TOASTER_DURATION } from "../../../constants/index";
 
-const Devices = ( { isAdminUser, _companyRole, _user, _company } ) => {
+const Devices = ( { isAdminUser, _companyRole, _user, _company, isDesktop } ) => {
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState<boolean>(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>();
@@ -237,7 +237,7 @@ const Devices = ( { isAdminUser, _companyRole, _user, _company } ) => {
                   handleEditClick={(id: any) => handleEditIconClick(id)}
                 />}
                 {deviceData && deviceData.length && (
-                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage="devices" />
+                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage={null} isDesktop={isDesktop} />
                 )}
               </div>
             </div>

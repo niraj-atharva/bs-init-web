@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 
-import { TeamModalType } from "constants/index";
-
 import { Formik, Form, Field, FormikProps } from "formik";
 import * as Yup from "yup";
 
 import teamApi from "apis/team";
 import Dialog from "common/Modal/Dialog";
+import { TeamModalType } from "constants/index";
 import { useList } from "context/TeamContext";
 import { useUserContext } from "context/UserContext";
 
@@ -15,10 +14,10 @@ const TeamMemberSchema = Yup.object().shape({
   lastName: Yup.string().required("Last Name cannot be blank"),
   email: Yup.string()
     .email("Invalid email ID")
-    .required("Email ID cannot be blank")
+    .required("Email ID cannot be blank"),
 });
 
-const getInitialvalues = (user) => ({
+const getInitialvalues = user => ({
   id: user?.id,
   firstName: user.firstName,
   lastName: user.lastName,
@@ -47,7 +46,7 @@ const EditClient = ({ user = {}, isEdit = false }: Props) => {
   const [apiError, setApiError] = useState<string>(""); // eslint-disable-line
   const { setModalState, departments } = useList();
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async values => {
     const { id, firstName, lastName, email, role, teamLead, departmentId } = values;
     const payload = {
       first_name: firstName,
@@ -59,6 +58,7 @@ const EditClient = ({ user = {}, isEdit = false }: Props) => {
     };
 
     if (isEdit) payload["id"] = id;
+
     if (!user.isTeamMember) payload["recipient_email"] = email;
 
     try {

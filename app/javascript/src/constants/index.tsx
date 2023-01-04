@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-unused-vars */
 import React from "react";
 
 const alertErrorClose = require("../../../assets/images/alert-error-close.svg");
@@ -48,35 +49,21 @@ export const TOASTER_DURATION = 3000;
 export const GetToasterIcon = ({ type }) => {
   switch (type) {
     case "success":
-      return <img
-        src={successCheckCircle}
-        className="items-center"
-        alt="success"
-      />;
+      return (
+        <img alt="success" className="items-center" src={successCheckCircle} />
+      );
     case "error":
-      return <img
-        src={errorOctagon}
-        className="items-center"
-        alt="error"
-      />;
+      return <img alt="error" className="items-center" src={errorOctagon} />;
     case "warning":
-      return <img
-        src={warningTriangle}
-        className="items-center"
-        alt="warning"
-      />;
+      return (
+        <img alt="warning" className="items-center" src={warningTriangle} />
+      );
     case "info":
-      return <img
-        src={infoCircle}
-        className="items-center"
-        alt="info"
-      />;
+      return <img alt="info" className="items-center" src={infoCircle} />;
     default:
-      return <img
-        src={successCheckCircle}
-        className="items-center"
-        alt="success"
-      />;
+      return (
+        <img alt="success" className="items-center" src={successCheckCircle} />
+      );
   }
 };
 
@@ -85,38 +72,18 @@ interface IToasterCloseButton {
   type: string
 }
 
-export const getToasterCloseButton = ({ type } : IToasterCloseButton) => {
+export const getToasterCloseButton = ({ closeToast, type } : IToasterCloseButton) => {
   switch (type) {
     case "success":
-      return <img
-        src={successCloseIcon}
-        alt="success"
-        // onClick={closeToast}
-      />;
+      return <img alt="success" src={successCloseIcon} onClick={closeToast} />;
     case "error":
-      return <img
-        src={alertErrorClose}
-        alt="error"
-        // onClick={closeToast}
-      />;
+      return <img alt="error" src={alertErrorClose} onClick={closeToast} />;
     case "warning":
-      return <img
-        src={warningCloseIcon}
-        alt="warning"
-        // onClick={closeToast}
-      />;
+      return <img alt="warning" src={warningCloseIcon} onClick={closeToast} />;
     case "info":
-      return <img
-        src={infoCloseIcon}
-        alt="info"
-        // onClick={closeToast}
-      />;
+      return <img alt="info" src={infoCloseIcon} onClick={closeToast} />;
     default:
-      return <img
-        src={successCloseIcon}
-        alt="success"
-        // onClick={closeToast}
-      />;
+      return <img alt="success" src={successCloseIcon} onClick={closeToast} />;
   }
 };
 

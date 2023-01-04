@@ -43,7 +43,7 @@ const getTableData = (leads) => {
   return [{}];
 };
 
-const Leads = ({ permissions }) => {
+const Leads = ({ permissions, isDesktop }) => {
   const [isFilterVisible, setFilterVisibility] = React.useState<boolean>(false);
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
@@ -166,7 +166,7 @@ const Leads = ({ permissions }) => {
                   rowOnClick={permissions.leads ? handleRowClick : () => { }}// eslint-disable-line
                 />}
                 {leadData && leadData.length && (
-                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage="leads" />
+                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage={null} isDesktop={isDesktop} />
                 )}
               </div>
             </div>

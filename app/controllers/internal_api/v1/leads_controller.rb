@@ -16,7 +16,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
 
     pagy, lead_actions = pagy(
       LeadTimeline.with_actions(Lead.filter(params:, user: current_user, ids: true), current_user),
-      items_param: :lead_actions_per_page)
+      items_param: :per_page)
     timeline_details = lead_actions.map(&:render_properties)
 
     render json: { timeline_details:, pagy: pagy_metadata(pagy) }, status: :ok

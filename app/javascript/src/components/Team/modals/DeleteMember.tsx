@@ -1,10 +1,9 @@
 import React from "react";
 
-import { TeamModalType } from "constants/index";
-
 import teamApi from "apis/team";
 import ConfirmDialog from "common/Modal/ConfirmDialog";
 import Toastr from "common/Toastr";
+import { TeamModalType } from "constants/index";
 import { useList } from "context/TeamContext";
 
 const DeleteMember = ({ user }) => {

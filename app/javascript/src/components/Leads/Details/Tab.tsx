@@ -15,6 +15,7 @@ const Tab = ({
   forItem,
   setForItem,
   isEdit,
+  isDesktop,
   setIsEdit,
   setFormRef }) => {
   // const defaultClassName = "inline-flex p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group";
@@ -76,7 +77,7 @@ const Tab = ({
         lineItemsTab: defaultClassName,
         quotesTab: defaultClassName
       });
-      setRenderTabData(<Timelines leadDetails={leadDetails} />);
+      setRenderTabData(<Timelines leadDetails={leadDetails} isDesktop={isDesktop} />);
     } else if (activeTab === "lineItems"){
       setForItem("lineItems");
       setTabClassName({

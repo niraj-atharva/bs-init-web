@@ -14,18 +14,18 @@ import Header from "./Header";
 import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapLeadTimelineList, unmapLeadTimelineDetails } from "../../../mapper/lead.timeline.mapper";
 
-const Actions = () => {
+const Actions = ({ isDesktop }) => {
   const navigate = useNavigate();
 
   const [tableData, setTableData] = useState<any>(null);
-  const [timelineData, setTimelineData] = useState<any>(null);
+  const [timelineData, setTimelineData] = useState<any[]>([]);
   const [allowUserList, setAllowUserLIst] = useState<any>(null);
   const [priorityCodeList, setPriorityCodeList] = useState<any>(null);
 
   const [pagy, setPagy] = React.useState<any>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = React.useState<any>({
-    lead_actions_per_page: searchParams.get("lead_actions_per_page") || 10,
+    per_page: searchParams.get("per_page") || 10,
     page: searchParams.get("page") || 1
   });
   const queryParams = () => new URLSearchParams(params).toString();
@@ -141,7 +141,7 @@ const Actions = () => {
     getAllowedUsers();
     getLeadTimelineItems();
     setSearchParams(params);
-  }, [params.lead_actions_per_page, params.page]);
+  }, [params.per_page, params.page]);
 
   useEffect(() => {
     setAuthHeaders();
@@ -205,7 +205,7 @@ const Actions = () => {
                   tableRowArray={tableData}
                 />}
                 {timelineData && tableData && timelineData.length && (
-                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage="lead_actions" />
+                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage="lead/actions" isDesktop={isDesktop} />
                 )}
               </div>
             </div>

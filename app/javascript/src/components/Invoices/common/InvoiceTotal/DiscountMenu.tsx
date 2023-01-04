@@ -2,22 +2,29 @@ import React from "react";
 
 import { EditIcon, DeleteIcon } from "miruIcons";
 
-const DiscountMenu = ({ setShowDiscount, setShowDiscountMenu, setAddDiscount, setDiscount }) => (
-  <div className="bg-white rounded-lg w-28 mt-16 py-2 absolute">
+const DiscountMenu = ({
+  setShowDiscount,
+  setShowDiscountMenu,
+  setAddDiscount,
+  setDiscount,
+}) => (
+  <div className="absolute mt-16 w-28 rounded-lg bg-white py-2">
     <ul className="list-none">
       <li
-        className="flex py-2.5 px-4 cursor-pointer bg-white hover:bg-miru-gray-100 rounded"
+        className="flex cursor-pointer rounded bg-white py-2.5 px-4 hover:bg-miru-gray-100"
         onClick={() => {
           setShowDiscountMenu(false);
           setShowDiscount(false);
           setAddDiscount(true);
         }}
       >
-        <EditIcon size={18} className="text-col-han-app-1000" />
-        <span className="pl-2 font-medium text-sm text-miru-han-purple-1000">Edit</span>
+        <EditIcon className="text-col-han-app-1000" size={18} />
+        <span className="pl-2 text-sm font-medium text-miru-han-purple-1000">
+          Edit
+        </span>
       </li>
       <li
-        className="flex py-2.5 px-4 cursor-pointer bg-white hover:bg-miru-gray-100 rounded"
+        className="flex cursor-pointer rounded bg-white py-2.5 px-4 hover:bg-miru-gray-100"
         onClick={() => {
           setShowDiscountMenu(false);
           setDiscount(null);
@@ -25,8 +32,10 @@ const DiscountMenu = ({ setShowDiscount, setShowDiscountMenu, setAddDiscount, se
           setAddDiscount(false);
         }}
       >
-        <DeleteIcon size={18} className="text-col-red-400" />
-        <span className="pl-2 font-medium text-sm text-col-red-400">Remove</span>
+        <DeleteIcon className="text-col-red-400" size={18} />
+        <span className="pl-2 text-sm font-medium text-miru-red-400">
+          Remove
+        </span>
       </li>
     </ul>
   </div>

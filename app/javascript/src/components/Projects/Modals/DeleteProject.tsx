@@ -9,7 +9,11 @@ interface IProps {
   fetchProjectList: any;
 }
 
-const DeleteProject = ({ project, setShowDeleteDialog, fetchProjectList }: IProps) => {
+const DeleteProject = ({
+  project,
+  setShowDeleteDialog,
+  fetchProjectList,
+}: IProps) => {
   const deleteProject = async project => {
     const res = await projectApi.destroy(project.id);
     if (res.status === 200) {
@@ -17,6 +21,7 @@ const DeleteProject = ({ project, setShowDeleteDialog, fetchProjectList }: IProp
     }
     fetchProjectList();
   };
+
   return (
     <ConfirmDialog
       title='Delete Project'

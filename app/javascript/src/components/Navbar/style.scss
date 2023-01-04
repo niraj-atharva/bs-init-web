@@ -53,3 +53,7 @@
 .sidebar.collapse-sidebar ~ .content-wrapper {
 	width: calc(100% - 80px);
 }
+
+.sidebar.collapse-sidebar .hide-on-sidebar {
+	display: none;
+}

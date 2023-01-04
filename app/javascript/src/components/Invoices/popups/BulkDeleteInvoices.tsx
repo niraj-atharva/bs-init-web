@@ -5,20 +5,21 @@ import ConfirmDialog from "common/Modal/ConfirmDialog";
 
 interface IProps {
   invoices_ids: any;
-  setShowBulkDeleteDialog : any;
-  fetchInvoices: any
+  setShowBulkDeleteDialog: any;
+  fetchInvoices: any;
 }
 
-const BulkDeleteInvoices = ({ invoices_ids, setShowBulkDeleteDialog, fetchInvoices  }: IProps) => {
+const BulkDeleteInvoices = ({
+  invoices_ids,
+  setShowBulkDeleteDialog,
+  fetchInvoices,
+}: IProps) => {
   const destroyInvoices = async invoices_ids => {
-    try {
-      await invoicesApi.destroyBulk({ invoices_ids });
-      setShowBulkDeleteDialog(false);
-      fetchInvoices();
-    } catch (error) {
-      console.error(error);
-    }
+    await invoicesApi.destroyBulk({ invoices_ids });
+    setShowBulkDeleteDialog(false);
+    fetchInvoices();
   };
+
   return (
     <ConfirmDialog
       title='Delete Invoices'
@@ -29,7 +30,7 @@ const BulkDeleteInvoices = ({ invoices_ids, setShowBulkDeleteDialog, fetchInvoic
       noButtonText="CANCEL"
     >
       Are you sure you want to delete these invoice?
-      <b className="font-bold"></b> This action cannot
+      <b className="font-bold" /> This action cannot
       be reversed.
     </ConfirmDialog>
   );

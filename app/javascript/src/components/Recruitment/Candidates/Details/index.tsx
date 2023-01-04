@@ -13,10 +13,11 @@ import { TOASTER_DURATION } from "../../../../constants/index";
 import { unmapCandidateDetails } from "../../../../mapper/candidate.mapper";
 
 interface IDetailsProps {
-  id?: number|string
+  id?: number|string,
+  isDesktop: boolean
 }
 
-const Details: React.FC<IDetailsProps> = () => {
+const Details: React.FC<IDetailsProps> = ({ isDesktop }) => {
   const [candidateDetails, setCandidateDetails] = useState<any>({});
   const [showCandidateSetting, setShowCandidateSetting] = useState<boolean>(false);
   const [forItem, setForItem] = useState<string>("summary");
@@ -52,6 +53,7 @@ const Details: React.FC<IDetailsProps> = () => {
         candidateDetails={candidateDetails}
         setCandidateDetails={setCandidateDetails}
         setForItem={setForItem}
+        isDesktop={isDesktop}
         isEdit={isEdit}
         setIsEdit={setIsEdit}
         setFormRef={setFormRef}
