@@ -10,7 +10,6 @@
     "alpine-turbo-drive-adapter": "^2.0.0",
     "alpinejs": "^2.2.5",
     "autoprefixer": "~9",
-    "autosize": "^5.0.1",
     "axios": "^0.24.0",
     "classnames": "^2.3.1",
     "currency-symbol-map": "^5.0.1",
@@ -32,6 +31,7 @@
     "ramda": "^0.28.0",
     "react": "^17.0.2",
     "react-autocomplete": "^1.8.1",
+    "react-autosize-textarea": "^7.1.0",
     "react-cookie": "^4.1.1",
     "react-datepicker": "^4.7.0",
     "react-datetime-picker": "^3.5.0",
@@ -75,22 +75,35 @@
     "husky": "^7.0.0",
     "lint-staged": "^12.1.2",
     "postcss": "~7",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "3.11.2"
   },
   "lint-staged": {
-    "app/javascript/**/*.{js,json,ts,tsx}": [
-      "eslint --fix",
-      "git add"
+    "app/**/*.{js,jsx,json,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "{package.json,.eslintrc.js,.prettierrc.js}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    ".eslint-rules/**/*": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "cypress-tests/**/*.{js,jsx,json,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
     ],
     "./**/*.rb": [
-      "bundle exec rubocop -a"
+      "bundle exec rubocop -a --force-exclusion"
     ],
     "{Gemfile,Rakefile,config.ru}": [
-      "bundle exec rubocop -a"
+      "bundle exec rubocop -a --force-exclusion"
     ]
   },
   "scripts": {

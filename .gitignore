@@ -60,6 +60,7 @@ cypress/artifacts/screenshots
 cypress/artifacts/videos
 cypress/screenshots
 cypress/videos
+cypress/downloads
 
 # IDEs and System/OS files
 .DS_Store

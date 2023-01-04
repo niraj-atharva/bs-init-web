@@ -3,8 +3,6 @@
 require "rest-client"
 
 class InternalApi::V1::SpaceUsagesController < InternalApi::V1::ApplicationController
-  include Timesheet
-
   skip_after_action :verify_authorized, only: [:index]
   # after_action :verify_policy_scoped, only: [:index]
 
@@ -19,7 +17,7 @@ class InternalApi::V1::SpaceUsagesController < InternalApi::V1::ApplicationContr
     space_usages = SpaceUsage.during(
       params[:from],
       params[:to]).order(id: :desc)
-    entries = formatted_entries_by_date(space_usages)
+    entries = TimesheetEntriesPresenter.new(space_usages).group_snippets_by_work_date
     render json: {
       entries:,
       employees:,
@@ -36,7 +34,7 @@ class InternalApi::V1::SpaceUsagesController < InternalApi::V1::ApplicationContr
     if space_usage.save
       render json: {
         notice: I18n.t("space_usage.create.message"),
-        entry: space_usage.formatted_entry
+        entry: space_usage.snippet
       }
     else
       render json: { error: space_usage.errors.full_messages.to_sentence }, status: :unprocessable_entity
@@ -48,7 +46,7 @@ class InternalApi::V1::SpaceUsagesController < InternalApi::V1::ApplicationContr
     if current_space_usage.update(space_usage_params)
       render json: {
         notice: I18n.t("space_usage.update.message"),
-        entry: current_space_usage.formatted_entry
+        entry: current_space_usage.snippet
       }, status: :ok
     else
       render json: { error: current_space_usage.errors.full_messages.to_sentence }, status: :unprocessable_entity

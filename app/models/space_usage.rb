@@ -97,7 +97,7 @@ class SpaceUsage < ApplicationRecord
     }
   end
 
-  def formatted_entry
+  def snippet
     {
       id: id.to_i,
       user_id:,

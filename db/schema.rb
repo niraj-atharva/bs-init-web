@@ -272,7 +272,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_130954) do
     t.datetime "updated_at", null: false
     t.string "external_view_key"
     t.jsonb "payment_infos", default: {}
+    t.bigint "company_id"
     t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["company_id"], name: "index_invoices_on_company_id"
     t.index ["external_view_key"], name: "index_invoices_on_external_view_key", unique: true
     t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
     t.index ["issue_date"], name: "index_invoices_on_issue_date"
@@ -632,6 +634,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_130954) do
   add_foreign_key "invoice_line_items", "invoices"
   add_foreign_key "invoice_line_items", "timesheet_entries"
   add_foreign_key "invoices", "clients"
+  add_foreign_key "invoices", "companies"
   add_foreign_key "lead_line_items", "leads"
   add_foreign_key "lead_quotes", "leads"
   add_foreign_key "lead_timelines", "lead_timelines", column: "parent_lead_timeline_id"

@@ -31,7 +31,7 @@ class Slack::SpaceUsageNotifyJob < ApplicationJob
   end
 
   def create_space_payload_msg
-    entry = @space_usage.formatted_entry
+    entry = @space_usage.snippet
     bookingDate = DateTime.parse("#{entry[:work_date]}").strftime("%d/%m/%Y")
     member_names = @space_usage.company.users.where(id: @space_usage.team_members)
       .map { |i| "*#{i.slack_member_id.present? ? "<@#{i.slack_member_id}>" : i.full_name}*" } .to_sentence
@@ -65,7 +65,7 @@ class Slack::SpaceUsageNotifyJob < ApplicationJob
   end
 
   def update_space_payload_msg
-    entry = @space_usage.formatted_entry
+    entry = @space_usage.snippet
     bookingDate = DateTime.parse("#{entry[:work_date]}").strftime("%d/%m/%Y")
     member_names = @space_usage.company.users.where(id: @space_usage.team_members)
       .map { |i| "*#{i.slack_member_id.present? ? "<@#{i.slack_member_id}>" : i.full_name}*" } .to_sentence
@@ -99,7 +99,7 @@ class Slack::SpaceUsageNotifyJob < ApplicationJob
   end
 
   def delete_space_payload_msg
-    entry = @space_usage.formatted_entry
+    entry = @space_usage.snippet
     bookingDate = DateTime.parse("#{entry[:work_date]}").strftime("%d/%m/%Y")
     member_names = @space_usage.company.users.where(id: @space_usage.team_members)
       .map { |i| "*#{i.slack_member_id.present? ? "<@#{i.slack_member_id}>" : i.full_name}*" } .to_sentence

@@ -131,6 +131,7 @@ class User < ApplicationRecord
 
   # Callbacks
   after_discard :discard_project_members
+  before_create :set_token
 
   def having_department?(department_id)
     sales_department_id = User::DEPARTMENT_OPTIONS.detect { |department| department.id == department_id.to_i }&.id
@@ -195,6 +196,10 @@ class User < ApplicationRecord
   end
 
   private
+
+    def set_token
+      self.token = SecureRandom.base58(50)
+    end
 
     def discard_project_members
       project_members.discard_all

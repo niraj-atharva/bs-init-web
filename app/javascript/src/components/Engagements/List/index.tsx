@@ -17,7 +17,7 @@ import Header from "./Header";
 import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapEngagementList, unmapEngagementDetails } from "../../../mapper/engagement.mapper";
 
-const Engagements = ( { isAdminUser, permissions } ) => {
+const Engagements = ( { isAdminUser, permissions, isDesktop } ) => {
   const [isFilterVisible, setFilterVisibilty] = React.useState<boolean>(false);
   const [engagementData, setEngagementData] = useState<any>([{}]);
   const [engagementOptions, setEngagementOptions] = useState<any>([]);
@@ -223,7 +223,7 @@ const Engagements = ( { isAdminUser, permissions } ) => {
                   hasEditAction={false}
                 />}
                 {engagementData && engagementData.length && (
-                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage="engagements" />
+                  <Pagination pagy={pagy} params={params} setParams={setParams} forPage={null} isDesktop={isDesktop} />
                 )}
               </div>
             </div>

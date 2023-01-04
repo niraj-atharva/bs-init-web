@@ -6,7 +6,7 @@ class InternalApi::V1::Leads::TimelinesController < InternalApi::V1::Application
 
     pagy, lead_timelines = pagy(
       lead.lead_timelines.order(created_at: :desc),
-      items_param: :timelines_per_page)
+      items_param: :per_page)
     timeline_details = lead_timelines.map(&:render_properties)
     render json: { timeline_details:, pagy: pagy_metadata(pagy) }, status: :ok
   end

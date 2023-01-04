@@ -25,7 +25,7 @@ import { unmapLeadTimelineList } from "../../../../mapper/lead.timeline.mapper";
 const profileDefaultAvatar = require("../../../../../../assets/images/avatar.svg");
 const systemMessageIcon = require("../../../../../../assets/images/system_message.svg");
 
-const Timelines = ({ candidateDetails }) => {
+const Timelines = ({ candidateDetails, isDesktop }) => {
   const [showButton, setShowButton] = useState(false);
 
   const [toggleMenu, setToggleMenu] = useState<boolean>(false);
@@ -52,7 +52,7 @@ const Timelines = ({ candidateDetails }) => {
   const [pagy, setPagy] = React.useState<any>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = React.useState<any>({
-    timelines_per_page: searchParams.get("timelines_per_page") || 50,
+    per_page: searchParams.get("per_page") || 50,
     page: searchParams.get("page") || 1
   });
   const queryParams = () => new URLSearchParams(params).toString();
@@ -71,7 +71,7 @@ const Timelines = ({ candidateDetails }) => {
   useEffect(() => {
     fetchLeadTimelines();
     setSearchParams(params);
-  }, [params.timelines_per_page, params.page]);
+  }, [params.per_page, params.page]);
 
   useEffect(() => {
     setAuthHeaders();
@@ -136,7 +136,7 @@ const Timelines = ({ candidateDetails }) => {
               </div>
             ))}
             {timelineData && timelineData.length && (
-              <Pagination pagy={pagy} params={params} setParams={setParams} forPage="lead_timelines" />
+              <Pagination pagy={pagy} params={params} setParams={setParams} forPage="timelines" isDesktop={isDesktop} />
             )}
             {showButton && (
               <button

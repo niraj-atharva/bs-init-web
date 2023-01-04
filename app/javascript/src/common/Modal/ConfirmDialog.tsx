@@ -18,7 +18,7 @@ const ConfirmDialog: FC<IConfirmDialog> = ({ title, children, open, onClose, onC
   }
   return (
     <Dialog title={title} open={open} onClose={onClose}>
-      <p className="my-8">
+      <p className="mt-2 font-normal">
         {children}
       </p>
       <div className="flex justify-between">

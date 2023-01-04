@@ -13,7 +13,7 @@ import Tab from "./Tab";
 import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapLeadDetails } from "../../../mapper/lead.mapper";
 
-const LeadList = () => {
+const LeadList = ({ isDesktop }) => {
   const [leadDetails, setLeadDetails] = useState<any>({});
   const { leadId } = useParams();
   const [showLeadSetting, setShowLeadSetting] = useState<boolean>(false);
@@ -54,6 +54,7 @@ const LeadList = () => {
         forItem="leads"
         setForItem={setForItem}
         isEdit={isEdit}
+        isDesktop={isDesktop}
         setIsEdit={setIsEdit}
         setFormRef={setFormRef} />
       {showLeadSetting && (

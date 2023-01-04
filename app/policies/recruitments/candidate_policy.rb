@@ -8,31 +8,31 @@ class Recruitments::CandidatePolicy < ApplicationPolicy
   end
 
   def items?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def show?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def create?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def new_invoice_line_items?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def update?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def destroy?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    allowed_users?
   end
 
   def allowed_users?
-    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_sales_department?)
+    user_owner_role? || user_admin_role? || (user_employee_role? && user_under_hr_department?)
   end
 
   def permitted_attributes

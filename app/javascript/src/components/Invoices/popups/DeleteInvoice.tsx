@@ -11,21 +11,22 @@ interface IProps {
   fetchInvoices?: any;
 }
 
-const DeleteInvoice = ({ invoice, setShowDeleteDialog, fetchInvoices }: IProps) => {
+const DeleteInvoice = ({
+  invoice,
+  setShowDeleteDialog,
+  fetchInvoices,
+}: IProps) => {
   const navigate = useNavigate();
   const destroyInvoice = async invoice => {
-    try {
-      await invoicesApi.destroy(invoice);
-      setShowDeleteDialog(false);
-      if (fetchInvoices) {
-        fetchInvoices();
-      } else {
-        navigate("/invoices");
-      }
-    } catch (error) {
-      console.error(error);
+    await invoicesApi.destroy(invoice);
+    setShowDeleteDialog(false);
+    if (fetchInvoices) {
+      fetchInvoices();
+    } else {
+      navigate("/invoices");
     }
   };
+
   return (
     <ConfirmDialog
       title='Delete Invoice'
@@ -36,7 +37,7 @@ const DeleteInvoice = ({ invoice, setShowDeleteDialog, fetchInvoices }: IProps) 
       noButtonText="CANCEL"
     >
       Are you sure you want to delete this invoice?
-      <b className="font-bold"></b> This action cannot
+      <b className="font-bold" /> This action cannot
       be reversed.
     </ConfirmDialog>
   );

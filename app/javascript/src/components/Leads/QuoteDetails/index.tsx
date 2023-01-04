@@ -14,7 +14,7 @@ import { TOASTER_DURATION } from "../../../constants/index";
 import { unmapLeadDetails } from "../../../mapper/lead.mapper";
 import { unmapLeadQuoteDetails } from "../../../mapper/lead.quote.mapper";
 
-const LeadList = () => {
+const LeadList = ({ isDesktop }) => {
 
   const [leadDetails, setLeadDetails] = useState<any>({});
   const [leadInfo, setLeadInfo] = useState<any>({});
@@ -59,6 +59,7 @@ const LeadList = () => {
         setLeadDetails={setLeadDetails}
         forItem="quoteDetails"
         setForItem="quoteDetails"
+        isDesktop={isDesktop}
         isEdit={false}
         setIsEdit={false}
         setFormRef={setFormRef} />

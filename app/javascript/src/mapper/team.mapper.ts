@@ -1,4 +1,4 @@
-const mapper = (item) => ({
+const mapper = item => ({
   id: item.id,
   firstName: item.firstName,
   lastName: item.lastName,
@@ -11,22 +11,19 @@ const mapper = (item) => ({
   department: item.department ? { id: item.department.id, name: item.department.name } : null,
 });
 
-const unmapList = (input) => {
-
+const unmapList = input => {
   let { team, invitation } = input.data;
   team = team.map(item => ({
     ...mapper(item),
-    isTeamMember: true
+    isTeamMember: true,
   }));
 
   invitation = invitation.map(item => ({
     ...mapper(item),
-    isTeamMember: false
+    isTeamMember: false,
   }));
 
   return [...team, ...invitation];
 };
 
-export {
-  unmapList
-};
+export { unmapList };

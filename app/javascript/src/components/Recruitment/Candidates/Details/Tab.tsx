@@ -10,6 +10,7 @@ const Tab = ({
   setCandidateDetails,
   setForItem,
   isEdit,
+  isDesktop,
   setIsEdit,
   setFormRef,
 }) => {
@@ -62,7 +63,7 @@ const Tab = ({
         summaryTab: defaultClassName,
         timelinesTab: activeClassName,
       });
-      setRenderTabData(<Timelines candidateDetails={candidateDetails} />);
+      setRenderTabData(<Timelines candidateDetails={candidateDetails} isDesktop={isDesktop} />);
     }
   }, [activeTab, candidateDetails, isEdit]);
 

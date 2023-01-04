@@ -7,8 +7,10 @@ import * as Yup from "yup";
 import profileApi from "apis/profile";
 import { Divider } from "common/Divider";
 import Loader from "common/Loader/index";
+import Toastr from "common/Toastr";
 // import { sendGAPageView } from "utils/googleAnalytics";
 
+import { useProfile } from "../context/EntryContext";
 import Header from "../Header";
 
 const deleteIcon = require("../../../../../assets/images/delete.svg");
@@ -21,25 +23,22 @@ const userProfileSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name cannot be blank"),
   lastName: Yup.string().required("Last Name cannot be blank"),
   changePassword: Yup.boolean(),
-  password: Yup
-    .string()
-    .when("changePassword", {
-      is: true,
-      then: Yup.string().required("Please enter password")
-    }),
-  currentPassword: Yup
-    .string()
-    .when("changePassword", {
-      is: true,
-      then: Yup.string().required("Please enter current password")
-    }),
+  password: Yup.string().when("changePassword", {
+    is: true,
+    then: Yup.string().required("Please enter password"),
+  }),
+  currentPassword: Yup.string().when("changePassword", {
+    is: true,
+    then: Yup.string().required("Please enter current password"),
+  }),
 
-  confirmPassword: Yup
-    .string()
-    .when("changePassword", {
-      is: true,
-      then: Yup.string().oneOf([Yup.ref("password"), null], "Passwords don't match")
-    })
+  confirmPassword: Yup.string().when("changePassword", {
+    is: true,
+    then: Yup.string().oneOf(
+      [Yup.ref("password"), null],
+      "Passwords don't match"
+    ),
+  }),
 });
 
 const UserDetails = () => {
@@ -48,9 +47,10 @@ const UserDetails = () => {
     lastNameErr: "",
     passwordErr: "",
     currentPasswordErr: "",
-    confirmPasswordErr: ""
+    confirmPasswordErr: "",
   };
 
+  const { setUserState } = useProfile();
   const [profileImage, setProfileImage] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [firstName, setFirstName] = useState("");
@@ -61,104 +61,133 @@ const UserDetails = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changePassword, setChangePassword] = useState<boolean>(false);
-  const [showPasword, setShowPassword] = useState<boolean>(false);
-  const [showCurrentPasword, setShowCurrentPassword] = useState<boolean>(false);
-  const [showConfirmPasword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showCurrentPassword, setShowCurrentPassword] =
+    useState<boolean>(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const [isDetailUpdated, setIsDetailUpdated] = useState(false);
   const [errDetails, setErrDetails] = useState(initialErrState);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleProfileImageChange = (e) => {
+  const handleProfileImageChange = e => {
     const imageFile = e.target.files[0];
     setProfileImage(URL.createObjectURL(imageFile));
     setImageFile(imageFile);
     setIsDetailUpdated(true);
   };
+
   const handleUpdateProfile = async () => {
-    userProfileSchema.validate({ firstName, lastName, changePassword, password, confirmPassword, currentPassword }, { abortEarly: false }).then(async () => {
-      setisLoading(true);
+    try {
+      await userProfileSchema.validate(
+        {
+          firstName,
+          lastName,
+          changePassword,
+          password,
+          confirmPassword,
+          currentPassword,
+        },
+        { abortEarly: false }
+      );
+      await updateProfile();
+    } catch (err) {
+      setIsLoading(false);
+      const errObj = initialErrState;
+      err.inner.map(item => {
+        errObj[`${item.path}Err`] = item.message;
+      });
+      setErrDetails(errObj);
+    }
+  };
+
+  const updateProfile = async () => {
+    try {
+      setIsLoading(true);
       const formD = new FormData();
-      formD.append(
-        "user[first_name]", firstName
-      );
-      formD.append(
-        "user[last_name]", lastName
-      );
-      formD.append(
-        "user[color]", color
-      );
+      formD.append("user[first_name]", firstName);
+      formD.append("user[last_name]", lastName);
+      formD.append("user[color]", color);
       if (changePassword) {
-        formD.append(
-          "user[current_password]", currentPassword
-        );
-        formD.append(
-          "user[password]", password
-        );
-        formD.append(
-          "user[password_confirmation]", confirmPassword
-        );
+        formD.append("user[current_password]", currentPassword);
+        formD.append("user[password]", password);
+        formD.append("user[password_confirmation]", confirmPassword);
       }
+
       if (imageFile) {
-        formD.append(
-          "user[avatar]", imageFile
-        );
+        formD.append("user[avatar]", imageFile);
       }
       await profileApi.update(formD);
       setIsDetailUpdated(false);
       setErrDetails(initialErrState);
-      setisLoading(false);
-    }).catch(function (err) {
-      const errObj = initialErrState;
-      err.inner.map((item) => {
-        errObj[item.path + "Err"] = item.message;
+      setUserState("profileSettings", {
+        firstName,
+        lastName,
       });
-      setErrDetails(errObj);
-    });
+      setIsLoading(false);
+    } catch {
+      setIsLoading(false);
+      Toastr.error("Error in Updating user Details");
+    }
   };
 
-  const handleFirstNameChange = (event) => {
+  const handleFirstNameChange = event => {
     setFirstName(event.target.value);
     setIsDetailUpdated(true);
     setErrDetails({ ...errDetails, firstNameErr: "" });
   };
 
-  const handleLastNameChange = (event) => {
+  const handleLastNameChange = event => {
     setLastName(event.target.value);
     setIsDetailUpdated(true);
     setErrDetails({ ...errDetails, lastNameErr: "" });
   };
 
-  const handleColorChange = (event) => {
+  const handleColorChange = event => {
     setColor(event.target.value);
     setIsDetailUpdated(true);
   };
 
-  const handleCurrentPasswordChange = (event) => {
+  const handleCurrentPasswordChange = event => {
     setCurrentPassword(event.target.value);
     setIsDetailUpdated(true);
     setErrDetails({ ...errDetails, currentPasswordErr: "" });
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = event => {
     setPassword(event.target.value);
     setIsDetailUpdated(true);
     setErrDetails({ ...errDetails, passwordErr: "" });
   };
 
-  const handleConfirmPasswordChange = (event) => {
+  const handleConfirmPasswordChange = event => {
     setConfirmPassword(event.target.value);
     setIsDetailUpdated(true);
   };
 
   const getData = async () => {
-    setisLoading(true);
+    setIsLoading(true);
     const data = await profileApi.index();
-    setFirstName(data.data.user.first_name);
-    setLastName(data.data.user.last_name);
-    setProfileImage(data.data.user.avatar_url);
-    setEmail(data.data.user.email);
-    setColor(data.data.user.color);
-    setisLoading(false);
+    if (data.status && data.status == 200) {
+      setFirstName(data.data.user.first_name);
+      setLastName(data.data.user.last_name);
+      setProfileImage(data.data.user.avatar_url);
+      setEmail(data.data.user.email);
+      setColor(data.data.user.color);
+      setUserState("profileSettings", {
+        firstName: data.data.user.first_name,
+        lastName: data.data.user.last_name,
+        email: data.data.user.email,
+      });
+      setIsLoading(false);
+    } else {
+      setFirstName("");
+      setLastName("");
+      setProfileImage("");
+      setEmail("");
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -183,73 +212,109 @@ const UserDetails = () => {
     }
   };
 
-  const getErr = (errMsg) => <p className="text-sm text-red-600">{errMsg}</p>;
+  const getErr = errMsg => <p className="text-sm text-red-600">{errMsg}</p>;
 
   return (
-    <div className="flex flex-col w-4/5">
+    <div className="flex w-4/5 flex-col">
       <Header
-        title={"Profile Settings"}
-        subTitle={"View and manage profile settings"}
-        showButtons={true}
+        showButtons
         cancelAction={handleCancelAction}
-        saveAction={handleUpdateProfile}
         isDisableUpdateBtn={isDetailUpdated}
+        saveAction={handleUpdateProfile}
+        subTitle="View and manage profile settings"
+        title="Profile Settings"
       />
-      {isLoading ? <Loader /> : (
-        <div className="pt-10 pb-10 pl-10 pr-10 mt-4 bg-miru-gray-100 min-h-80v">
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="mt-4 min-h-80v bg-miru-gray-100 pb-10 pt-10 pl-10 pr-10">
           <div className="flex flex-row py-6">
             <div className="w-4/12 p-2 font-bold">Basic Details</div>
             <div className="w-full p-2">
               Profile Picture
               {profileImage ? (
-                <div className="flex flex-row mt-2">
-                  <div className="w-20 h-20">
-                    <img src={profileImage} alt={"profile_pic"} className={"rounded-full min-w-full h-full"} />
-                  </div>
-                  <label htmlFor="file-input" className="">
-                    <img src={editButton} alt={"edit_pencil"} className={"rounded-full mt-5 cursor-pointer"} style={{ "minWidth": "40px" }}></img>
-                  </label>
-                  <input id="file-input" type="file" name="myImage" className='hidden' onChange={handleProfileImageChange}>
-                  </input>
-                  <button className="" onClick={handleDeleteLogo}>
+                <div className="mt-2 flex flex-row">
+                  <div className="h-20 w-20">
                     <img
-                      src={deleteIcon}
+                      alt="profile_pic"
+                      className="h-full min-w-full rounded-full"
+                      data-cy="profile-image"
+                      src={profileImage}
+                    />
+                  </div>
+                  <label className="" htmlFor="file-input">
+                    <img
+                      alt="edit_pencil"
+                      className="mt-5 cursor-pointer rounded-full"
+                      src={editButton}
+                      style={{ minWidth: "40px" }}
+                    />
+                  </label>
+                  <input
+                    className="hidden"
+                    id="file-input"
+                    name="myImage"
+                    type="file"
+                    onChange={handleProfileImageChange}
+                  />
+                  <button
+                    className=""
+                    data-cy="delete-image"
+                    onClick={handleDeleteLogo}
+                  >
+                    <img
                       alt="delete"
-                      style={{ "minWidth": "20px" }}
+                      src={deleteIcon}
+                      style={{ minWidth: "20px" }}
                     />
                   </button>
                 </div>
               ) : (
                 <>
-                  <div className="w-20 h-20 mt-2 border rounded border-miru-han-purple-1000 ">
-                    <label htmlFor="file-input" className="flex justify-center w-full h-full cursor-pointer items-cente">
-                      <img alt="profile_box" src={img} className="object-none" />
+                  <div className="mt-2 h-20 w-20 rounded border border-miru-han-purple-1000 ">
+                    <label
+                      className="items-cente flex h-full w-full cursor-pointer justify-center"
+                      htmlFor="file-input"
+                    >
+                      <img
+                        alt="profile_box"
+                        className="object-none"
+                        src={img}
+                      />
                     </label>
                   </div>
-                  <input id="file-input" type="file" name="myImage" className='hidden' onChange={handleProfileImageChange} />
+                  <input
+                    className="hidden"
+                    id="file-input"
+                    name="myImage"
+                    type="file"
+                    onChange={handleProfileImageChange}
+                  />
                 </>
               )}
               <div className="flex flex-col mt-2">
                 <label className="mt-2">Name</label>
-                <div className="flex flex-row mt-2">
-                  <div className="flex flex-col w-1/2">
+                <div className="mt-2 flex flex-row">
+                  <div className="flex w-1/2 flex-col">
                     <input
-                      type="text"
+                      className="mr-2 w-full border py-1 px-1"
+                      data-cy="first-name"
                       id="first_name"
                       name="first_name"
+                      type="text"
                       value={firstName}
-                      className="w-full px-1 py-1 mr-2 border"
                       onChange={handleFirstNameChange}
                     />
                     {errDetails.firstNameErr && getErr(errDetails.firstNameErr)}
                   </div>
-                  <div className="flex flex-col w-1/2">
+                  <div className="flex w-1/2 flex-col">
                     <input
-                      type="text"
+                      className="ml-2 w-full border py-1 px-1"
+                      data-cy="last-name"
                       id="last_name"
                       name="last_name"
+                      type="text"
                       value={lastName}
-                      className="w-full px-1 py-1 ml-2 border"
                       onChange={handleLastNameChange}
                     />
                     {errDetails.lastNameErr && getErr(errDetails.lastNameErr)}
@@ -272,13 +337,13 @@ const UserDetails = () => {
               <div className="mt-2">
                 <label>Email</label>
                 <input
-                  type="text"
+                  disabled
+                  className="mt-2 w-full border py-1 px-1"
                   id="email"
                   name="email"
+                  type="text"
                   value={email}
-                  className="w-full px-1 py-1 mt-2 border"
                   onChange={event => setEmail(event.target.value)}
-                  disabled
                 />
               </div>
             </div>
@@ -288,76 +353,122 @@ const UserDetails = () => {
             <div className="w-4/12 p-2 font-bold">Password</div>
             <div className="w-full p-2">
               <div>
-                {
-                  !changePassword && (
-                    <div>
-                      <p className="cursor-pointer text-miru-han-purple-1000" onClick={() => setChangePassword(true)}>CHANGE PASSWORD</p>
-                    </div>
-                  )
-                }
-                {
-                  changePassword && (
-                    <div>
-                      <div className="flex flex-col">
-                        <div className="flex flex-col w-1/2 pr-2">
-                          <label>Current Password</label>
+                {!changePassword && (
+                  <div>
+                    <p
+                      className=" cursor-pointer text-miru-han-purple-1000"
+                      data-cy="change-password"
+                      onClick={() => setChangePassword(true)}
+                    >
+                      CHANGE PASSWORD
+                    </p>
+                  </div>
+                )}
+                {changePassword && (
+                  <div>
+                    <div className="flex flex-col">
+                      <div className="flex w-1/2 flex-col pr-2">
+                        <label>Current Password</label>
+                        <div className="relative flex items-center">
+                          <input
+                            className="mt-2 w-full border py-1 px-1"
+                            data-cy="current-password"
+                            id="current_password"
+                            name="current_password"
+                            type={showCurrentPassword ? "text" : "password"}
+                            value={currentPassword}
+                            onChange={handleCurrentPasswordChange}
+                          />
+                          <button
+                            className="btn btn-outline-primary absolute right-0 mt-2 mr-3"
+                            onClick={() =>
+                              setShowCurrentPassword(!showCurrentPassword)
+                            }
+                          >
+                            {!showCurrentPassword ? (
+                              <img alt="pass_icon" src={password_icon} />
+                            ) : (
+                              <img
+                                alt="pass_icon_text"
+                                src={password_icon_text}
+                              />
+                            )}
+                          </button>
+                        </div>
+                        {errDetails.currentPasswordErr &&
+                          getErr(errDetails.currentPasswordErr)}
+                      </div>
+                      <div className="mt-2 flex flex-row">
+                        <div className="mt-2 flex w-1/2 flex-col pr-2">
+                          <label className="mb-2">Password</label>
                           <div className="relative flex items-center">
                             <input
-                              type={showCurrentPasword ? "text" : "password"}
-                              id="current_password"
-                              name="current_password"
-                              value={currentPassword}
-                              className="w-full px-1 py-1 mt-2 border"
-                              onChange={handleCurrentPasswordChange}
+                              className=" mt-2 w-full border py-1 px-1"
+                              data-cy="password"
+                              id="password"
+                              name="password"
+                              type={showPassword ? "text" : "password"}
+                              value={password}
+                              onChange={handlePasswordChange}
                             />
-                            <button className="absolute right-0 mt-2 mr-3 btn btn-outline-primary" onClick={() => setShowCurrentPassword(!showCurrentPasword)} >
-                              {!showCurrentPasword ? <img src={password_icon} alt="pass_icon" /> : <img src={password_icon_text} alt="pass_icon_text" />}
+                            <button
+                              className="btn btn-outline-primary absolute right-0 mt-2 mr-3"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {!showPassword ? (
+                                <img alt="pass_icon" src={password_icon} />
+                              ) : (
+                                <img
+                                  alt="pass_icon_text"
+                                  src={password_icon_text}
+                                />
+                              )}
                             </button>
                           </div>
-                          {errDetails.currentPasswordErr && getErr(errDetails.currentPasswordErr)}
+                          {errDetails.passwordErr &&
+                            getErr(errDetails.passwordErr)}
                         </div>
-                        <div className="flex flex-row mt-2">
-                          <div className="flex flex-col w-1/2 pr-2 mt-2">
-                            <label className="mb-2">Password</label>
-                            <div className="relative flex items-center">
-                              <input
-                                type={showPasword ? "text" : "password"}
-                                id="password"
-                                name="password"
-                                value={password}
-                                className="w-full px-1 py-1 mt-2 border "
-                                onChange={handlePasswordChange}
-                              />
-                              <button className="absolute right-0 mt-2 mr-3 btn btn-outline-primary" onClick={() => setShowPassword(!showPasword)}>
-                                {!showPasword ? <img src={password_icon} alt="pass_icon" /> : <img src={password_icon_text} alt="pass_icon_text" />}
-                              </button>
-                            </div>
-                            {errDetails.passwordErr && getErr(errDetails.passwordErr)}
-
+                        <div className="mt-2 flex w-1/2 flex-col pl-2">
+                          <label className="mb-2">Confirm Password</label>
+                          <div className="relative flex items-center">
+                            <input
+                              className="mt-2 w-full border py-1 px-1"
+                              data-cy="confirm-password"
+                              id="confirm_password"
+                              name="confirm_password"
+                              type={showConfirmPassword ? "text" : "password"}
+                              value={confirmPassword}
+                              onChange={handleConfirmPasswordChange}
+                            />
+                            <button
+                              className="btn btn-outline-primary absolute right-0 mt-2 mr-3"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                            >
+                              {!showConfirmPassword ? (
+                                <img alt="pass_icon" src={password_icon} />
+                              ) : (
+                                <img
+                                  alt="pass_icon_text"
+                                  src={password_icon_text}
+                                />
+                              )}
+                            </button>
                           </div>
-                          <div className="flex flex-col w-1/2 pl-2 mt-2">
-                            <label className="mb-2">Confirm Password</label>
-                            <div className="relative flex items-center">
-                              <input
-                                type={showConfirmPasword ? "text" : "password"}
-                                id="confirm_password"
-                                name="confirm_password"
-                                value={confirmPassword}
-                                className="w-full px-1 py-1 mt-2 border"
-                                onChange={handleConfirmPasswordChange}
-                              />
-                              <button className="absolute right-0 mt-2 mr-3 btn btn-outline-primary" onClick={() => setShowConfirmPassword(!showConfirmPasword)}>
-                                {!showConfirmPasword ? <img src={password_icon} alt="pass_icon" /> : <img src={password_icon_text} alt="pass_icon_text" />}
-                              </button>
-                            </div>
-                            {errDetails.confirmPasswordErr && getErr(errDetails.confirmPasswordErr)}
-                          </div>
+                          {errDetails.confirmPasswordErr &&
+                            getErr(errDetails.confirmPasswordErr)}
                         </div>
-                        <p className="mt-5 cursor-pointer text-miru-han-purple-1000" onClick={() => setChangePassword(false)}>CANCEL</p>
                       </div>
+                      <p
+                        className="mt-5 cursor-pointer text-miru-han-purple-1000"
+                        onClick={() => setChangePassword(false)}
+                      >
+                        CANCEL
+                      </p>
                     </div>
-                  )
-                }
+                  </div>
+                )}
               </div>
             </div>
           </div>

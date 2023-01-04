@@ -11,7 +11,6 @@ interface IProps {
 }
 
 const DeleteClient = ({ client, setShowDeleteDialog }: IProps) => {
-
   const navigate = useNavigate();
 
   const deleteClient = async client => {
@@ -19,6 +18,7 @@ const DeleteClient = ({ client, setShowDeleteDialog }: IProps) => {
     setShowDeleteDialog(false);
     window.location.pathname == "/clients" ? navigate(0) : navigate("/clients");
   };
+
   return (
     <ConfirmDialog
       title='Delete Client'

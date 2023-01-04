@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 
-import autosize from "autosize";
 import { format } from "date-fns";
 import dayjs from "dayjs";
-import { minFromHHMM, minToHHMM, validateTimesheetEntry } from "helpers";
-import { useOutsideClick } from "helpers";
+import {
+  minFromHHMM,
+  minToHHMM,
+  useOutsideClick,
+  validateTimesheetEntry,
+} from "helpers";
+import TextareaAutosize from "react-autosize-textarea";
 import { TimeInput } from "StyledComponents";
 
 import timesheetEntryApi from "apis/timesheet-entry";
@@ -13,6 +17,7 @@ import CustomDatePicker from "common/CustomDatePicker";
 import Toastr from "common/Toastr";
 
 const AddEntry: React.FC<Iprops> = ({
+  dayInfo,
   selectedEmployeeId,
   fetchEntries,
   setNewEntryView,
@@ -22,7 +27,7 @@ const AddEntry: React.FC<Iprops> = ({
   editEntryId,
   setEditEntryId,
   handleFilterEntry,
-  handleRelocateEntry
+  handleRelocateEntry,
 }) => {
   const [note, setNote] = useState<string>("");
   const [duration, setDuration] = useState<string>("00:00");
@@ -32,12 +37,14 @@ const AddEntry: React.FC<Iprops> = ({
   const [selectedDate, setSelectedDate] = useState<string>(selectedFullDate);
   const [displayDatePicker, setDisplayDatePicker] = useState<boolean>(false);
 
-  const datePickerRef: MutableRefObject<any>  = useRef();
+  const datePickerRef: MutableRefObject<any> = useRef();
 
-  useOutsideClick(datePickerRef, () => { setDisplayDatePicker(false); } );
+  useOutsideClick(datePickerRef, () => {
+    setDisplayDatePicker(false);
+  });
 
   const handleFillData = () => {
-    if (! editEntryId) return;
+    if (!editEntryId) return;
     const entry = entryList[selectedFullDate].find(
       entry => entry.id === editEntryId
     );
@@ -62,15 +69,15 @@ const AddEntry: React.FC<Iprops> = ({
     }
   }, [projectId]);
 
-  const handleDurationChange = (val) => {
+  const handleDurationChange = val => {
     setDuration(val);
   };
 
   const getPayload = () => ({
     work_date: selectedDate,
     duration: minFromHHMM(duration),
-    note: note,
-    bill_status: billable ? "unbilled" : "non_billable"
+    note,
+    bill_status: billable ? "unbilled" : "non_billable",
   });
 
   const handleSave = async () => {
@@ -78,15 +85,23 @@ const AddEntry: React.FC<Iprops> = ({
     const message = validateTimesheetEntry(tse);
     if (message) {
       Toastr.error(message);
+
       return;
     }
-    const res = await timesheetEntryApi.create({
-      project_id: projectId,
-      timesheet_entry: tse
-    }, selectedEmployeeId);
+
+    const res = await timesheetEntryApi.create(
+      {
+        project_id: projectId,
+        timesheet_entry: tse,
+      },
+      selectedEmployeeId
+    );
 
     if (res.status === 200) {
-      const fetchEntriesRes = await fetchEntries(selectedFullDate, selectedFullDate);
+      const fetchEntriesRes = await fetchEntries(
+        selectedFullDate,
+        selectedFullDate
+      );
       if (fetchEntriesRes) {
         setNewEntryView(false);
       }
@@ -99,16 +114,17 @@ const AddEntry: React.FC<Iprops> = ({
       const message = validateTimesheetEntry(tse);
       if (message) {
         Toastr.error(message);
+
         return;
       }
 
       const updateRes = await timesheetEntryApi.update(editEntryId, {
         project_id: projectId,
-        timesheet_entry: tse
+        timesheet_entry: tse,
       });
 
       if (updateRes.status >= 200 && updateRes.status < 300) {
-        if (selectedDate  !== selectedFullDate) {
+        if (selectedDate !== selectedFullDate) {
           await handleFilterEntry(selectedFullDate, editEntryId);
           await handleRelocateEntry(selectedDate, updateRes.data.entry);
         } else {
@@ -128,10 +144,7 @@ const AddEntry: React.FC<Iprops> = ({
   };
 
   useEffect(() => {
-    const textArea = document.querySelector("textarea");
-    autosize(textArea);
     handleFillData();
-    textArea.click();
   }, []);
 
   return (
@@ -239,35 +252,33 @@ const AddEntry: React.FC<Iprops> = ({
       <div className="max-w-min">
         {editEntryId === 0 ? (
           <button
-            onClick={handleSave}
-            className={
-              "mb-1 h-8 w-38 text-xs py-1 px-6 rounded border text-white font-bold tracking-widest " +
-              (note && projectId
+            className={`mb-1 h-8 w-38 rounded border py-1 px-6 text-xs font-bold tracking-widest text-white ${
+              note && projectId
                 ? "bg-miru-han-purple-1000 hover:border-transparent"
-                : "bg-miru-gray-1000")
-            }
+                : "bg-miru-gray-1000"
+            }`}
+            onClick={handleSave}
           >
             SAVE
           </button>
         ) : (
           <button
-            onClick={() => handleEdit()}
-            className={
-              "mb-1 h-8 w-38 text-xs py-1 px-6 rounded border text-white font-bold tracking-widest " +
-              (note && projectId
+            className={`mb-1 h-8 w-38 rounded border py-1 px-6 text-xs font-bold tracking-widest text-white ${
+              note && projectId
                 ? "bg-miru-han-purple-1000 hover:border-transparent"
-                : "bg-miru-gray-1000")
-            }
+                : "bg-miru-gray-1000"
+            }`}
+            onClick={() => handleEdit()}
           >
             UPDATE
           </button>
         )}
         <button
+          className="mt-1 h-8 w-38 rounded border border-miru-han-purple-1000 bg-transparent py-1 px-6 text-xs font-bold tracking-widest text-miru-han-purple-600 hover:border-transparent hover:bg-miru-han-purple-1000 hover:text-white"
           onClick={() => {
             setNewEntryView(false);
             setEditEntryId(0);
           }}
-          className="mt-1 h-8 w-38 text-xs py-1 px-6 rounded border border-miru-han-purple-1000 bg-transparent hover:bg-miru-han-purple-1000 text-miru-han-purple-600 font-bold hover:text-white hover:border-transparent tracking-widest"
         >
           CANCEL
         </button>
@@ -277,8 +288,9 @@ const AddEntry: React.FC<Iprops> = ({
 };
 
 interface Iprops {
+  dayInfo: object;
   selectedEmployeeId: number;
-  fetchEntries: (from: string, to: string) => Promise<any>
+  fetchEntries: (from: string, to: string) => Promise<any>; // eslint-disable-line
   setNewEntryView: React.Dispatch<React.SetStateAction<boolean>>;
   projects: any[];
   selectedDateInfo: object;
@@ -286,10 +298,9 @@ interface Iprops {
   selectedFullDate: string;
   editEntryId: number;
   setEditEntryId: React.Dispatch<React.SetStateAction<number>>;
-  dayInfo: object;
   entryList: object;
-  handleFilterEntry: (date: string, entryId: (string | number)) => object;
-  handleRelocateEntry: (date: string, entry: object) => void;
+  handleFilterEntry: (date: string, entryId: string | number) => object; // eslint-disable-line
+  handleRelocateEntry: (date: string, entry: object) => void; // eslint-disable-line
 }
 
 export default AddEntry;

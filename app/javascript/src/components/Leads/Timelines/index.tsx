@@ -21,7 +21,7 @@ import { unmapLeadTimelineList } from "../../../mapper/lead.timeline.mapper";
 const profileDefaultAvatar = require("../../../../../assets/images/avatar.svg");
 const systemMessageIcon = require("../../../../../assets/images/system_message.svg");
 
-const Timelines = ({ leadDetails }) => {
+const Timelines = ({ leadDetails, isDesktop }) => {
   const [showButton, setShowButton] = useState(false);
 
   const [toggleMenu, setToggleMenu] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const Timelines = ({ leadDetails }) => {
 
   document.addEventListener('click',closeOpenToggleMenu)
 
-  const [timelineData, setTimelineData] = useState<any>(null);
+  const [timelineData, setTimelineData] = useState<any[]>([]);
   const [newCommentTimeline, setNewCommentTimeline] = useState<boolean>(false);
   const [newAppointmentTimeline, setNewAppointmentTimeline] = useState<boolean>(false);
   const [newEmailTimeline, setNewEmailTimeline] = useState<boolean>(false);
@@ -45,10 +45,10 @@ const Timelines = ({ leadDetails }) => {
   const [newOtherDMTimeline, setNewOtherDMTimeline] = useState<boolean>(false);
   const [newTaskTimeline, setNewTaskTimeline] = useState<boolean>(false);
 
-  const [pagy, setPagy] = React.useState<any>(null);
+  const [pagy, setPagy] = useState<any>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [params, setParams] = React.useState<any>({
-    timelines_per_page: searchParams.get("timelines_per_page") || 50,
+  const [params, setParams] = useState<any>({
+    per_page: searchParams.get("per_page") || 50,
     page: searchParams.get("page") || 1
   });
   const queryParams = () => new URLSearchParams(params).toString();
@@ -67,7 +67,7 @@ const Timelines = ({ leadDetails }) => {
   useEffect(() => {
     fetchLeadTimelines();
     setSearchParams(params);
-  }, [params.timelines_per_page, params.page]);
+  }, [params.per_page, params.page]);
 
   useEffect(() => {
     setAuthHeaders();
@@ -131,8 +131,14 @@ const Timelines = ({ leadDetails }) => {
                 </div>
               </div>
             ))}
-            {timelineData && timelineData.length && (
-              <Pagination pagy={pagy} params={params} setParams={setParams} forPage="lead_timelines" />
+            {timelineData.length && (
+              <Pagination
+                isDesktop={isDesktop}
+                pagy={pagy}
+                params={params}
+                setParams={setParams}
+                forPage="lead/timelines"
+              />
             )}
             {showButton && (
               <button
