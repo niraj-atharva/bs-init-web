@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_30_095828) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_04_130954) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -314,6 +314,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_095828) do
     t.index ["lead_id"], name: "index_lead_quotes_on_lead_id"
   end
 
+  create_table "lead_tech_stacks", force: :cascade do |t|
+    t.bigint "lead_id"
+    t.bigint "tech_stack_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_id"], name: "index_lead_tech_stacks_on_lead_id"
+    t.index ["tech_stack_id"], name: "index_lead_tech_stacks_on_tech_stack_id"
+  end
+
   create_table "lead_timelines", force: :cascade do |t|
     t.bigint "lead_id", null: false
     t.integer "kind"
@@ -377,7 +386,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_095828) do
     t.string "first_name"
     t.string "last_name"
     t.integer "source_code"
-    t.text "tech_stack_ids", default: [], array: true
     t.text "emails", default: [], array: true
     t.integer "priority_code"
     t.string "title"
@@ -506,6 +514,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_095828) do
     t.integer "member_user_id", null: false
     t.index ["member_user_id", "user_id"], name: "index_team_members_on_member_user_id_and_user_id"
     t.index ["user_id", "member_user_id"], name: "index_team_members_on_user_id_and_member_user_id"
+  end
+
+  create_table "tech_stacks", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "timesheet_entries", force: :cascade do |t|

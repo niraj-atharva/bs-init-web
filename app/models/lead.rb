@@ -29,7 +29,6 @@
 #  source_code                   :integer
 #  stage_code                    :integer
 #  status_code                   :integer
-#  tech_stack_ids                :text             default([]), is an Array
 #  telephone                     :string
 #  timezone                      :string
 #  title                         :string
@@ -75,6 +74,8 @@ class Lead < ApplicationRecord
   has_many :lead_line_items, dependent: :destroy
   has_many :lead_quotes, dependent: :destroy
   has_many :lead_timelines, dependent: :destroy
+  has_many :lead_tech_stacks, dependent: :destroy
+  has_many :tech_stacks, through: :lead_tech_stacks
 
   validates :first_name, :last_name, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email
@@ -179,7 +180,6 @@ class Lead < ApplicationRecord
     return "" if industry_code.nil?
 
     self.industry_code.name
-    # self.industry_code_name_hash[industry_code]
   end
 
   def quality_code_name
@@ -219,9 +219,7 @@ class Lead < ApplicationRecord
   end
 
   def tech_stack_names
-    return [] unless tech_stack_ids.present?
-
-    self.tech_stack_name_hash.values_at(*tech_stack_ids.map(&:to_i)).flatten.compact.uniq
+    self.tech_stacks.pluck(:name)
   end
 
   def assignee_name

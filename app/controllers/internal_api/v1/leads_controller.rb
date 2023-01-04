@@ -41,7 +41,7 @@ class InternalApi::V1::LeadsController < InternalApi::V1::ApplicationController
 
     priority_codes = Lead::PRIORITY_CODE_OPTIONS
 
-    tech_stacks = Lead::TECH_STACK_OPTIONS
+    tech_stacks = TechStack.all.order(name: :asc).select(:name, :id)
 
     countries = ISO3166::Country.pluck(:alpha2, :iso_short_name)
 
