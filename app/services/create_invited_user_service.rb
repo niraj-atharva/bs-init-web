@@ -83,6 +83,8 @@ class CreateInvitedUserService
         first_name: invitation.first_name,
         last_name: invitation.last_name,
         email: invitation.recipient_email,
+        department_id: invitation.department_id,
+        team_lead: invitation.team_lead,
         confirmed_at: Time.current,
         current_workspace_id: invitation.company.id
       )
