@@ -11,7 +11,8 @@ import {
   TackleIcon,
   LeadIcon,
   EngagementIcon,
-  RecruitmentIcon
+  RecruitmentIcon,
+  TeamsIcon,
 } from "miruIcons";
 import { NavLink } from "react-router-dom";
 
@@ -22,41 +23,41 @@ export const navEmployeeOptions = [
     logo: <SpaceIcon size={26} />,
     label: "Spaces",
     dataCy: "spaces-tab",
-    path: Paths.SPACES
+    path: Paths.SPACES,
   },
   {
     logo: <TackleIcon size={26} />,
     label: "TackLe",
     dataCy: "devices-tab",
-    path: Paths.DEVICES
+    path: Paths.DEVICES,
   },
   {
     logo: <LeadIcon size={26} />,
     label: "Leads",
     dataCy: "leads-tab",
     path: Paths.LEADS,
-    permissionId: 'leads'
+    permissionId: "leads",
   },
   {
     logo: <RecruitmentIcon size={26} />,
     label: "Recruitment",
     dataCy: "recruitment-tab",
     path: Paths.RECRUITMENT,
-    permissionId: 'recruitment'
+    permissionId: "recruitment",
   },
   {
     logo: <EngagementIcon size={26} />,
     label: "Engagements",
     dataCy: "engagements-tab",
     path: Paths.ENGAGEMENTS_DASHBOARD,
-    permissionId: 'engagementsDashboard'
+    permissionId: "engagementsDashboard",
   },
   {
     logo: <EngagementIcon size={26} />,
     label: "Engagements",
     dataCy: "engagements-tab",
     path: Paths.ENGAGEMENTS,
-    permissionId: 'engagements'
+    permissionId: "engagements",
   },
   {
     logo: <TimeTrackingIcon size={26} />,
@@ -65,7 +66,7 @@ export const navEmployeeOptions = [
     path: Paths.TIME_TRACKING,
   },
   {
-    logo: <ClientsIcon size={26} />,
+    logo: <TeamsIcon size={26} />,
     label: "Team",
     dataCy: "team-tab",
     path: Paths.TEAM,
@@ -84,7 +85,7 @@ export const navAdminOptions = [
     logo: <ClientsIcon size={26} />,
     label: "Clients",
     dataCy: "clients-tab",
-    path: Paths.CLIENTS
+    path: Paths.CLIENTS,
   },
   {
     logo: <InvoicesIcon size={26} />,
@@ -147,26 +148,34 @@ export const MobileListOption = ({ option, setSelectedTab }) => (
   </li>
 );
 
-export const getEmployeeOptions = (permissions) =>
+export const getEmployeeOptions = permissions =>
   navEmployeeOptions.map((option, index) => {
-    if(option.label === "Engagements" && permissions.engagementsDashboard) {
-      return(option.permissionId === "engagementsDashboard" ? <ListOption key={index} option={option} /> : null)
-    } else if(option.label === "Engagements") {
-      return(option.permissionId !== "engagementsDashboard" ? <ListOption key={index} option={option} /> : null)
-    } else {
-      return <ListOption key={index} option={option} />
+    if (option.label === "Engagements" && permissions.engagementsDashboard) {
+      return option.permissionId === "engagementsDashboard" ? (
+        <ListOption key={index} option={option} />
+      ) : null;
+    } else if (option.label === "Engagements") {
+      return option.permissionId !== "engagementsDashboard" ? (
+        <ListOption key={index} option={option} />
+      ) : null;
     }
+
+    return <ListOption key={index} option={option} />;
   });
 
-export const getAdminOptions = (permissions) =>
+export const getAdminOptions = permissions =>
   navAdminOptions.map((option, index) => {
-    if(option.label === "Engagements" && permissions.engagementsDashboard) {
-      return(option.permissionId === "engagementsDashboard" ? <ListOption key={index} option={option} /> : null)
-    } else if(option.label === "Engagements") {
-      return(option.permissionId !== "engagementsDashboard" ? <ListOption key={index} option={option} /> : null)
-    } else {
-      return <ListOption key={index} option={option} />
+    if (option.label === "Engagements" && permissions.engagementsDashboard) {
+      return option.permissionId === "engagementsDashboard" ? (
+        <ListOption key={index} option={option} />
+      ) : null;
+    } else if (option.label === "Engagements") {
+      return option.permissionId !== "engagementsDashboard" ? (
+        <ListOption key={index} option={option} />
+      ) : null;
     }
+
+    return <ListOption key={index} option={option} />;
   });
 
 export const MobileMenuOptions = ({
