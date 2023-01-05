@@ -19,7 +19,7 @@ const App = props => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ isAdminUser, user, companyRole }}>
+    <UserContext.Provider value={{ isAdminUser, user, companyRole, permissions }}>
       <BrowserRouter>
         <ToastContainer autoClose={TOASTER_DURATION} />
         <DisplayView {...props} isAdminUser={isAdminUser} user={user} permissions={permissions} />

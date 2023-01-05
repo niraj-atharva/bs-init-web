@@ -46,7 +46,8 @@ module ApplicationHelper
         "leads" => LeadPolicy.new(current_user, nil).index?,
         "engagements" => EngagementPolicy.new(current_user, nil).index?,
         'engagementsDashboard': EngagementPolicy.new(current_user, nil).admin_access?,
-        'recruitment': Recruitments::CandidatePolicy.new(current_user, nil).allowed_users?
+        'recruitment': Recruitments::CandidatePolicy.new(current_user, nil).allowed_users?,
+        'deviceUpdate': DevicePolicy.new(current_user, nil).update?
       }
     }
   end

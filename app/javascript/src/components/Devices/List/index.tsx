@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { GooglePlayLogo, AppStoreLogo, PaperPlaneTilt, XCircle } from "phosphor-react";
-import { CircleWavyWarning } from "phosphor-react";
+import { GooglePlayLogo, AppStoreLogo, PaperPlaneTilt, XCircle, CircleWavyWarning } from "phosphor-react";
 import { useCookies } from "react-cookie";
 import { useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import ReactTooltip from "react-tooltip";
 
+import { useUserContext } from "context/UserContext";
 import { setAuthHeaders, registerIntercepts } from "apis/axios";
 import devicesApi from "apis/devices";
 import ConfirmDialog from "common/Modal/ConfirmDialog";
@@ -20,18 +20,19 @@ import './style.scss';
 
 import { TOASTER_DURATION } from "../../../constants/index";
 
-const Devices = ( { isAdminUser, _companyRole, _user, _company, isDesktop } ) => {
+const Devices = ( { isDesktop } ) => {
+  const { permissions } = useUserContext();
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState<boolean>(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>();
   const [editOpen, setEditOpen] = useState<boolean>(false);
-  const [isFilterVisible, setFilterVisibilty] = React.useState<boolean>(false);
+  const [isFilterVisible, setFilterVisibilty] = useState<boolean>(false);
   const [rememberFilter, setRememberFilter] = useCookies();
   const [deviceData, setDeviceData] = useState<any>([]);
-  const [pagy, setPagy] = React.useState<any>(null);
-  const [appUrl, setAppUrl] = React.useState<any>({ androidAppUrl: null, iosAppUrl: null });
+  const [pagy, setPagy] = useState<any>(null);
+  const [appUrl, setAppUrl] = useState<any>({ androidAppUrl: null, iosAppUrl: null });
   const [searchParams, setSearchParams] = useSearchParams();
-  const [params, setParams] = React.useState<any>({
+  const [params, setParams] = useState<any>({
     page: searchParams.get("page") || 1,
     ...(searchParams.get("q[first_name_or_last_name_or_email_cont]") && { ["q[first_name_or_last_name_or_email_cont]"]: searchParams.get("q[first_name_or_last_name_or_email_cont]") }),
     ...(searchParams.get("engagements") && { engagements: searchParams.get("engagements") }),
@@ -228,11 +229,11 @@ const Devices = ( { isAdminUser, _companyRole, _user, _company, isDesktop } ) =>
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <div className="overflow-hidden">
                 {deviceData && <Table
-                  hasRowIcons={isAdminUser}
+                  hasRowIcons={true}
                   tableHeader={tableHeader}
                   tableRowArray={getTableData(deviceData)}
-                  hasDeleteAction={true}
-                  hasEditAction={true}
+                  hasDeleteAction={permissions['deviceUpdate']}
+                  hasEditAction={permissions['deviceUpdate']}
                   handleDeleteClick={(id: any) => handleDeleteIconClick(id)}
                   handleEditClick={(id: any) => handleEditIconClick(id)}
                 />}
