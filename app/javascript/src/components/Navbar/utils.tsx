@@ -150,6 +150,10 @@ export const MobileListOption = ({ option, setSelectedTab }) => (
 
 export const getEmployeeOptions = permissions =>
   navEmployeeOptions.map((option, index) => {
+    if (option.permissionId && permissions[option.permissionId] === false) {
+      return;
+    }
+
     if (option.label === "Engagements" && permissions.engagementsDashboard) {
       return option.permissionId === "engagementsDashboard" ? (
         <ListOption key={index} option={option} />
@@ -165,6 +169,10 @@ export const getEmployeeOptions = permissions =>
 
 export const getAdminOptions = permissions =>
   navAdminOptions.map((option, index) => {
+    if (option.permissionId && permissions[option.permissionId] === false) {
+      return;
+    }
+
     if (option.label === "Engagements" && permissions.engagementsDashboard) {
       return option.permissionId === "engagementsDashboard" ? (
         <ListOption key={index} option={option} />
