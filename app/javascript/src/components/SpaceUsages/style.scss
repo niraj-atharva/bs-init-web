@@ -157,3 +157,28 @@
 	@apply text-red-600 ml-1;
 	content:"*";
 }
+
+.festivalBanner {
+	background-image: url('../../../../assets/images/kite-festival-banner.jpeg') !important;
+	// width: 1920px;
+	// height: 50px;
+	// overflow:  hidden;
+	max-width: 100%;
+	animation-name: my-animation;
+	animation-duration: 8s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	position: relative;
+	width:  100%;
+	background-size: cover;
+	background-position: center -70px;
+}
+@keyframes my-animation {
+    from {
+        background-position: center -70px;
+    }
+    to {
+        background-position: center 0px;
+    }
+}

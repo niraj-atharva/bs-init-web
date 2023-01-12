@@ -316,7 +316,7 @@ const SpaceUsages = ({ _isAdminUser, _companyRole, user, _company }) => {
       <div className="mx-auto font-manrope">
         <div>
           <div className="mb-1">
-            <div className="flex items-center justify-between w-full h-14 bg-miru-han-purple-1000">
+            <div className="flex items-center justify-between w-full h-30 bg-miru-han-purple-1000 festivalBanner">
               <div className="flex items-center justify-between">
                 <div className="mr-2">
                   <button
