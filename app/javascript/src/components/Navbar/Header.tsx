@@ -14,7 +14,7 @@ const Header = ({setCollapsedSidebar, collapsedSidebar}) => (
     <Link to={Paths.SPACES}>
       <img className="h-4" alt="ac-logo" src={brandLogo} />
     </Link>
-    <div className="toggle-menu" onClick={() => setCollapsedSidebar(!collapsedSidebar) }>
+    <div className="toggle-menu bg-miru-han-purple-1000" onClick={() => setCollapsedSidebar(!collapsedSidebar) }>
       {collapsedSidebar ? '>' : '<'}
     </div>
   </div>
