@@ -84,7 +84,8 @@ class User < ApplicationRecord
     DepartmentOptionKlass.new("SRE", 16, "#4cc8fb"),
     DepartmentOptionKlass.new("Sales", 17, "#784457"),
     DepartmentOptionKlass.new("Shopify", 18, "#c63c9b"),
-    DepartmentOptionKlass.new("Node.js", 19, "#79A366")
+    DepartmentOptionKlass.new("Node.js", 19, "#79A366"),
+    DepartmentOptionKlass.new("Product", 20, "#7f0dff"),
 ].sort_by(&:name)
 
   # Associations
