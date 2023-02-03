@@ -56,16 +56,18 @@ const CandidateList = ({ isAdminUser }) => {
     navigate(`/recruitment/candidates/${id}`);
   };
 
-  useEffect(() => {
-    setAuthHeaders();
-    registerIntercepts();
-    candidates.get("")
+  const fetchCandidate = async() => {
+    await candidates.get("")
       .then((res) => {
         const sanitized = unmapCandidateList(res);
         setCandidateData(sanitized.recruitmentCandidate);
-        // setTotalMinutes(sanitized.totalMinutes);
-        // setOverDueOutstandingAmt(sanitized.overdueOutstandingAmount);
-      });
+  });
+};
+
+  useEffect(() => {
+    setAuthHeaders();
+    registerIntercepts();
+    fetchCandidate();
   }, []);
 
   const tableHeader = [
@@ -124,6 +126,7 @@ const CandidateList = ({ isAdminUser }) => {
       }
       {showDeleteDialog && (
         <DeleteCandidate
+          fetchCandidateList={fetchCandidate}
           setShowDeleteDialog={setShowDeleteDialog}
           candidate={candidateToDelete}
         />

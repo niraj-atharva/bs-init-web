@@ -50,16 +50,20 @@ const ConsultancyList = ({ isAdminUser }) => {
     setDelete(editSelection);
   };
 
-  useEffect(() => {
-    setAuthHeaders();
-    registerIntercepts();
-    consultancies.get("")
+
+  const fetchConsultancy = async () => {
+    await consultancies.get("")
       .then((res) => {
         const sanitized = unmapConsultancyList(res);
         setConsultancyData(sanitized.recruitmentConsultancy);
-        // setTotalMinutes(sanitized.totalMinutes);
-        // setOverDueOutstandingAmt(sanitized.overdueOutstandingAmount);
       });
+    };
+
+
+  useEffect(() => {
+    setAuthHeaders();
+    registerIntercepts();
+    fetchConsultancy();
   }, []);
 
   const tableHeader = [
@@ -117,6 +121,7 @@ const ConsultancyList = ({ isAdminUser }) => {
       }
       {showDeleteDialog && (
         <DeleteConsultancy
+          fetchConsultancyList={fetchConsultancy}
           setShowDeleteDialog={setShowDeleteDialog}
           consultancy={consultancyToDelete}
         />
