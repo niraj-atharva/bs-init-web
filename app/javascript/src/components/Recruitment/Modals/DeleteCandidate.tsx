@@ -8,14 +8,17 @@ import ConfirmDialog from "common/Modal/ConfirmDialog";
 interface IProps {
   candidate: any;
   setShowDeleteDialog: any;
+  fetchCandidateList: any;
 }
 
-const DeleteCandidate = ({ candidate, setShowDeleteDialog }: IProps) => {
+const DeleteCandidate = ({ candidate, setShowDeleteDialog, fetchCandidateList }: IProps) => {
 
   const navigate = useNavigate();
 
   const deleteCandidate = async (candidate: any) => {
     await candidates.destroy(candidate.id);
+    setShowDeleteDialog(false);
+    fetchCandidateList();
     navigate('/recruitment/candidates')
   };
   return (

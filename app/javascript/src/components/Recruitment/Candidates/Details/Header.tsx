@@ -59,15 +59,19 @@ const Header = ({
     navigate('/recruitment/candidates');
   };
 
+  const fetchCandidate = async() => {
+    await candidates.get("")
+      .then((res) => {
+        const sanitized = unmapCandidateList(res);
+        setCandidateData(sanitized.recruitmentCandidate);
+  });
+};
+
   useEffect(() => {
     toggleCandidateDetails(!isCandidateOpen);
     setAuthHeaders();
     registerIntercepts();
-    candidates.get("")
-      .then((res) => {
-        const sanitized = unmapCandidateList(res);
-        setCandidateData(sanitized.recruitmentCandidate);
-      });
+    fetchCandidate();
   }, []);
 
   const menuBackground = isHeaderMenuVisible ? "bg-miru-gray-1000" : "";
@@ -203,6 +207,7 @@ const Header = ({
       </div>
       {showDeleteDialog && (
         <DeleteCandidate
+        fetchCandidateList={fetchCandidate}
           setShowDeleteDialog={setShowDeleteDialog}
           candidate={candidateToDelete}
         />

@@ -6,16 +6,17 @@ import ConfirmDialog from "common/Modal/ConfirmDialog";
 interface IProps {
   consultancy: any;
   setShowDeleteDialog: any;
+  fetchConsultancyList: any;
 }
 
-const DeleteConsultancy = ({ consultancy, setShowDeleteDialog }: IProps) => {
+const DeleteConsultancy = ({ consultancy, setShowDeleteDialog, fetchConsultancyList }: IProps) => {
 
   const deleteConsultancy = async consultancy => {
     await consultancies.destroy(consultancy.id);
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    setShowDeleteDialog(false);
+    fetchConsultancyList();
   };
+
   return (
     <ConfirmDialog
       title='Delete Consultancy'
